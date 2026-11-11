@@ -99,8 +99,17 @@ export function MotionProvider({ children }: { children: ReactNode }) {
   return <MotionContext.Provider value={value}>{children}</MotionContext.Provider>
 }
 
+const fallbackMotionPreferences: MotionContextValue = {
+  reducedMotion: false,
+  slowMotion: false,
+  motionScale: motionConfig.defaults.motionScale,
+  timeScale: motionConfig.defaults.timeScale,
+  setReducedMotion: () => undefined,
+  setSlowMotion: () => undefined,
+  setMotionScale: () => undefined,
+  setTimeScale: () => undefined,
+}
+
 export function useMotionPreferences() {
-  const context = useContext(MotionContext)
-  if (!context) throw new Error('useMotionPreferences must be used within MotionProvider')
-  return context
+  return useContext(MotionContext) ?? fallbackMotionPreferences
 }
