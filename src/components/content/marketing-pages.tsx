@@ -1,0 +1,427 @@
+'use client'
+
+import Image from 'next/image'
+import Link from 'next/link'
+import { ArrowUpRight, Check, Mail, MapPin, Phone, ShieldCheck, Sparkles } from 'lucide-react'
+import { Header } from '@/components/layout/header'
+import { Footer } from '@/components/layout/footer'
+import { ButtonLink } from '@/components/ui/button'
+import { SectionHeading } from '@/components/ui/section-heading'
+import { Reveal } from '@/components/motion/reveal'
+import { useLocale } from '@/i18n/locale-provider'
+import { localizedText } from '@/i18n/localize'
+import { RequestForm } from '@/components/content/request-form'
+import { PropertyCard } from '@/components/property/property-card'
+import { properties } from '@/data/properties'
+import { ProjectGallery } from '@/components/project/project-gallery'
+
+const team = [
+  {
+    name: 'Ayesha Rahman',
+    role: 'Managing partner',
+    image: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=700&q=80',
+  },
+  {
+    name: 'Tareq Mahmud',
+    role: 'Land & advisory',
+    image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=700&q=80',
+  },
+  {
+    name: 'Raisa Chowdhury',
+    role: 'Project relationships',
+    image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=700&q=80',
+  },
+]
+
+/** Team metadata (names, images) is locale-neutral; roles are translated in the dictionaries. */
+const teamRoles = [
+  { roleKey: 'about.teamRole1' },
+  { roleKey: 'about.teamRole2' },
+  { roleKey: 'about.teamRole3' },
+]
+
+export function RequestPage() {
+  const { t } = useLocale()
+  return (
+    <div className="min-h-screen">
+      <Header />
+      <main className="container-shell py-16 sm:py-24">
+        <div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr] lg:items-start">
+          <div className="lg:sticky lg:top-10">
+            <p className="eyebrow">{t('request.eyebrow')}</p>
+            <h1 className="display-type mt-4 text-[clamp(3.4rem,15vw,6rem)] leading-[.82] sm:text-8xl">
+              {t('request.title1')}
+              <br />
+              <em className="font-normal text-terracotta">{t('request.title2')}</em>
+            </h1>
+            <p className="mt-7 max-w-sm text-sm leading-7 text-ink/60">{t('request.intro')}</p>
+            <div className="mt-9 space-y-4 text-sm text-ink/65">
+              <p className="flex items-center gap-3">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-stone text-terracotta">
+                  <Check className="h-4 w-4" />
+                </span>
+                {t('request.bullet1')}
+              </p>
+              <p className="flex items-center gap-3">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-stone text-terracotta">
+                  <Check className="h-4 w-4" />
+                </span>
+                {t('request.bullet2')}
+              </p>
+              <p className="flex items-center gap-3">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-stone text-terracotta">
+                  <Check className="h-4 w-4" />
+                </span>
+                {t('request.bullet3')}
+              </p>
+            </div>
+          </div>
+          <RequestForm />
+        </div>
+      </main>
+      <Footer />
+    </div>
+  )
+}
+
+export function AboutPage() {
+  const { t } = useLocale()
+  return (
+    <div className="min-h-screen">
+      <Header />
+      <main>
+        <section className="section-space container-shell">
+          <div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
+            <div>
+              <p className="eyebrow">{t('about.eyebrow')}</p>
+              <h1 className="display-type mt-4 text-[clamp(3.4rem,15vw,6rem)] leading-[.82] sm:text-8xl">
+                {t('about.title1')}
+                <br />
+                <em className="font-normal text-terracotta">{t('about.title2')}</em>
+              </h1>
+            </div>
+            <p className="max-w-lg text-base leading-8 text-ink/65">{t('about.intro')}</p>
+          </div>
+          <div className="relative mt-16 aspect-[16/8] overflow-hidden rounded-panel">
+            <Image
+              src="https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=2200&q=88"
+              alt={t('about.imageAlt')}
+              fill
+              sizes="100vw"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-ink/60 to-transparent" />
+            <p className="absolute bottom-7 left-7 max-w-md font-display text-4xl leading-none text-white sm:text-6xl">
+              {t('about.overlay')}
+            </p>
+          </div>
+        </section>
+        <section className="section-space bg-stone">
+          <div className="container-shell grid gap-12 lg:grid-cols-3">
+            <div>
+              <p className="eyebrow">{t('about.bringEyebrow')}</p>
+              <h2 className="display-type mt-4 text-5xl">
+                {t('about.bringTitle1')}
+                <br />
+                {t('about.bringTitle2')}
+              </h2>
+            </div>
+            <div className="lg:col-span-2 grid gap-8 sm:grid-cols-2">
+              <div>
+                <Sparkles className="h-5 w-5 text-terracotta" />
+                <h3 className="mt-5 text-lg font-bold">{t('about.point1Title')}</h3>
+                <p className="mt-3 text-sm leading-7 text-ink/60">{t('about.point1Copy')}</p>
+              </div>
+              <div>
+                <ShieldCheck className="h-5 w-5 text-terracotta" />
+                <h3 className="mt-5 text-lg font-bold">{t('about.point2Title')}</h3>
+                <p className="mt-3 text-sm leading-7 text-ink/60">{t('about.point2Copy')}</p>
+              </div>
+              <div>
+                <MapPin className="h-5 w-5 text-terracotta" />
+                <h3 className="mt-5 text-lg font-bold">{t('about.point3Title')}</h3>
+                <p className="mt-3 text-sm leading-7 text-ink/60">{t('about.point3Copy')}</p>
+              </div>
+              <div>
+                <Check className="h-5 w-5 text-terracotta" />
+                <h3 className="mt-5 text-lg font-bold">{t('about.point4Title')}</h3>
+                <p className="mt-3 text-sm leading-7 text-ink/60">{t('about.point4Copy')}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section className="container-shell section-space">
+          <SectionHeading
+            eyebrow={t('about.teamEyebrow')}
+            title={t('about.teamTitle')}
+            description={t('about.teamDescription')}
+          />
+          <div className="mt-12 grid gap-6 sm:grid-cols-3">
+            {team.map((person, index) => (
+              <div key={person.name}>
+                <div className="image-frame aspect-[4/5] rounded-panel">
+                  <Image
+                    src={person.image}
+                    alt={person.name}
+                    fill
+                    sizes="(max-width: 640px) 100vw, 33vw"
+                    className="object-cover transition duration-700 grayscale hover:grayscale-0"
+                  />
+                </div>
+                <p className="mt-4 text-sm font-bold">{person.name}</p>
+                <p className="mt-1 text-xs text-ink/45">
+                  {t(index === 0 ? 'about.teamRole1' : index === 1 ? 'about.teamRole2' : 'about.teamRole3')}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  )
+}
+
+export function ContactPage() {
+  const { t } = useLocale()
+  return (
+    <div className="min-h-screen">
+      <Header />
+      <main className="container-shell section-space">
+        <div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr]">
+          <div>
+            <p className="eyebrow">{t('contact.eyebrow')}</p>
+            <h1 className="display-type mt-4 text-[clamp(3.4rem,15vw,6rem)] leading-[.84] sm:text-8xl">
+              {t('contact.title1')}
+              <br />
+              <em className="font-normal text-terracotta">{t('contact.title2')}</em>
+            </h1>
+            <p className="mt-7 max-w-sm text-sm leading-7 text-ink/60">{t('contact.intro')}</p>
+            <div className="mt-10 space-y-5 text-sm">
+              <a href="tel:+8801700000000" className="flex items-center gap-4">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-stone text-terracotta">
+                  <Phone className="h-4 w-4" />
+                </span>
+                <span>
+                  <span className="block text-[10px] font-bold uppercase tracking-[.14em] text-ink/40">
+                    {t('form.call')}
+                  </span>
+                  <span className="mt-1 block font-semibold">+880 1700 000 000</span>
+                </span>
+              </a>
+              <a href="mailto:hello@swadheen.example" className="flex items-center gap-4">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-stone text-terracotta">
+                  <Mail className="h-4 w-4" />
+                </span>
+                <span>
+                  <span className="block text-[10px] font-bold uppercase tracking-[.14em] text-ink/40">
+                    {t('form.emailShort')}
+                  </span>
+                  <span className="mt-1 block font-semibold">hello@swadheen.example</span>
+                </span>
+              </a>
+              <p className="flex items-center gap-4">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-stone text-terracotta">
+                  <MapPin className="h-4 w-4" />
+                </span>
+                <span>
+                  <span className="block text-[10px] font-bold uppercase tracking-[.14em] text-ink/40">
+                    {t('contact.studio')}
+                  </span>
+                  <span className="mt-1 block font-semibold">{t('contact.studioAddress')}</span>
+                </span>
+              </p>
+            </div>
+          </div>
+          <div className="relative min-h-[520px] overflow-hidden rounded-panel bg-[#d9ded7] bg-[radial-gradient(circle_at_60%_35%,#f5f0e6_0,#d9ded7_45%,#bfcac0_100%)]">
+            <div className="absolute inset-0 opacity-35 [background-image:linear-gradient(30deg,transparent_48%,rgba(255,255,255,.7)_49%,rgba(255,255,255,.7)_51%,transparent_52%),linear-gradient(120deg,transparent_48%,rgba(122,145,126,.3)_49%,rgba(122,145,126,.3)_51%,transparent_52%)] [background-size:130px_130px,220px_220px]" />
+            <div className="absolute left-[53%] top-[47%] -translate-x-1/2 -translate-y-1/2">
+              <span className="flex h-16 w-16 animate-pulse-ring items-center justify-center rounded-full border-4 border-paper bg-terracotta text-white shadow-float">
+                <MapPin className="h-6 w-6" fill="currentColor" />
+              </span>
+              <span className="absolute left-1/2 top-full mt-3 -translate-x-1/2 whitespace-nowrap rounded-full bg-ink px-3 py-2 text-[10px] font-bold text-paper">
+                {t('contact.mapTag')}
+              </span>
+            </div>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  )
+}
+
+export function JournalPage() {
+  const { t, locale } = useLocale()
+  return (
+    <div className="min-h-screen">
+      <Header />
+      <main className="container-shell section-space">
+        <p className="eyebrow">{t('journal.eyebrow')}</p>
+        <h1 className="display-type mt-4 text-[clamp(3.4rem,15vw,7rem)] leading-[.82] sm:text-9xl">
+          {t('journal.title1')}
+          <br />
+          <em className="font-normal text-terracotta">{t('journal.title2')}</em>
+        </h1>
+        <div className="mt-16 grid gap-10 md:grid-cols-2 lg:grid-cols-3">
+          {properties.slice(0, 6).map((property, index) => (
+            <Reveal key={property.id} delay={index * 0.04}>
+              <Link href={`/properties/${property.slug}`} className="group block">
+                <div className="image-frame aspect-[4/3] rounded-panel">
+                  <Image
+                    src={property.gallery[1] ?? property.image}
+                    alt={localizedText(property.title, property.titleBn, locale)}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover"
+                  />
+                </div>
+                <p className="eyebrow mt-5">
+                  {t('journal.fieldNote')} · {String(index + 4).padStart(2, '0')} {t('journal.minRead')}
+                </p>
+                <h2 className="display-type mt-3 text-3xl leading-[.94] transition group-hover:text-terracotta">
+                  {t('journal.cardTitle', {
+                    place: localizedText(property.location, property.locationBn, locale).split(',')[0] ?? '',
+                  })}
+                </h2>
+                <span className="mt-4 inline-flex items-center gap-2 text-xs font-bold">
+                  {t('journal.readNote')} <ArrowUpRight className="h-3.5 w-3.5 text-terracotta" />
+                </span>
+              </Link>
+            </Reveal>
+          ))}
+        </div>
+      </main>
+      <Footer />
+    </div>
+  )
+}
+
+export function ProjectsPage({ slug }: { slug: string }) {
+  const { t } = useLocale()
+  const projectProperties = properties.filter((property) => property.projectSlug === slug)
+  const stages = [
+    { statusKey: 'project.statusComplete', labelKey: 'project.stage1', date: t('project.dateJan2025') },
+    { statusKey: 'project.statusComplete', labelKey: 'project.stage2', date: t('project.dateJun2025') },
+    { statusKey: 'project.statusInProgress', labelKey: 'project.stage3', date: t('project.dateNow') },
+    { statusKey: 'project.statusUpcoming', labelKey: 'project.stage4', date: t('project.dateQ42026') },
+  ]
+  return (
+    <div className="min-h-screen">
+      <Header />
+      <main>
+        <section className="relative min-h-[620px] overflow-hidden bg-moss text-white">
+          <ProjectGallery
+            images={projectProperties.flatMap((property) => property.gallery).slice(0, 6)}
+            title={t('project.galleryTitle')}
+          />
+          <div className="container-shell relative flex min-h-[620px] items-end pb-20">
+            <div>
+              <p className="eyebrow text-gold">{t('project.eyebrow')}</p>
+              <h1 className="display-type mt-5 max-w-3xl text-[clamp(3.4rem,15vw,7rem)] leading-[.8] sm:text-9xl">
+                {t('project.title1')}
+                <br />
+                <em className="font-normal text-gold">{t('project.title2')}</em>
+              </h1>
+              <p className="mt-7 max-w-md text-sm leading-7 text-white/65">{t('project.heroCopy')}</p>
+            </div>
+          </div>
+        </section>
+        <section className="container-shell section-space">
+          <div className="grid gap-12 lg:grid-cols-[.75fr_1.25fr]">
+            <div>
+              <p className="eyebrow">{t('project.ideaEyebrow')}</p>
+              <h2 className="display-type mt-4 text-5xl">
+                {t('project.ideaTitle1')}
+                <br />
+                <em className="font-normal text-terracotta">{t('project.ideaTitle2')}</em>
+              </h2>
+            </div>
+            <div className="max-w-2xl text-sm leading-8 text-ink/65">
+              <p>{t('project.ideaCopy1')}</p>
+              <p className="mt-5">{t('project.ideaCopy2')}</p>
+            </div>
+          </div>
+          <div className="mt-16 grid gap-4 sm:grid-cols-3">
+            <div className="rounded-panel bg-stone p-6">
+              <p className="numeric text-4xl font-extrabold">48</p>
+              <p className="mt-2 text-xs text-ink/50">{t('project.statResidences')}</p>
+            </div>
+            <div className="rounded-panel bg-stone p-6">
+              <p className="numeric text-4xl font-extrabold">2026</p>
+              <p className="mt-2 text-xs text-ink/50">{t('project.statReady')}</p>
+            </div>
+            <div className="rounded-panel bg-stone p-6">
+              <p className="numeric text-4xl font-extrabold">5,200</p>
+              <p className="mt-2 text-xs text-ink/50">{t('project.statGarden')}</p>
+            </div>
+          </div>
+        </section>
+        <section className="bg-stone py-20">
+          <div className="container-shell">
+            <SectionHeading
+              eyebrow={t('project.availableEyebrow')}
+              title={t('project.availableTitle')}
+              description={t('project.availableDescription')}
+            />
+            <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {projectProperties.map((property) => (
+                <PropertyCard key={property.id} property={property} />
+              ))}
+            </div>
+          </div>
+        </section>
+        <section className="container-shell section-space">
+          <div className="grid gap-12 lg:grid-cols-[.75fr_1.25fr]">
+            <div>
+              <p className="eyebrow">{t('project.progressEyebrow')}</p>
+              <h2 className="display-type mt-4 text-5xl">
+                {t('project.progressTitle1')}
+                <br />
+                {t('project.progressTitle2')}
+              </h2>
+            </div>
+            <div className="space-y-7">
+              {stages.map((stage, index) => (
+                <div key={stage.labelKey} className="flex gap-4">
+                  <span
+                    className={`mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${stage.statusKey === 'project.statusComplete' ? 'bg-moss text-white' : stage.statusKey === 'project.statusInProgress' ? 'bg-gold text-ink' : 'bg-line text-ink/45'}`}
+                  >
+                    {stage.statusKey === 'project.statusComplete' ? (
+                      <Check className="h-4 w-4" />
+                    ) : (
+                      <span className="text-xs font-bold">0{index + 1}</span>
+                    )}
+                  </span>
+                  <div className="flex flex-1 items-start justify-between gap-4 border-b border-line pb-6">
+                    <div>
+                      <p className="text-sm font-bold">{t(stage.labelKey as never)}</p>
+                      <p className="mt-1 text-xs text-ink/45">{t(stage.statusKey as never)}</p>
+                    </div>
+                    <p className="text-xs text-ink/45">{stage.date}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+        <section className="container-shell pb-24">
+          <div className="rounded-panel bg-moss p-8 text-paper sm:p-14">
+            <p className="eyebrow text-gold">{t('project.ctaEyebrow')}</p>
+            <div className="mt-5 flex flex-col justify-between gap-8 md:flex-row md:items-end">
+              <h2 className="display-type max-w-2xl text-[clamp(2.75rem,11vw,4.5rem)] leading-[.88] sm:text-7xl">
+                {t('project.ctaTitle1')}
+                <br />
+                <em className="font-normal text-gold">{t('project.ctaTitle2')}</em>
+              </h2>
+              <ButtonLink href="/request" variant="dark">
+                {t('arrangeViewing')} <ArrowUpRight className="h-4 w-4" />
+              </ButtonLink>
+            </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  )
+}

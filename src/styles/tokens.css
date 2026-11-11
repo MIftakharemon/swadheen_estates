@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@500;600;700&display=swap');
+
+:root {
+  --font-display: 'Cormorant Garamond';
+  --font-sans: 'Manrope';
+  --ink: 220 24% 13%;
+  --paper: 39 38% 96%;
+  --stone: 38 24% 91%;
+  --stone-deep: 35 20% 83%;
+  --line: 33 18% 81%;
+  --text-secondary: 220 10% 39%;
+  --text-muted: 220 7% 51%;
+  --terracotta: 13 56% 47%;
+  --terracotta-deep: 13 57% 37%;
+  --moss: 157 20% 32%;
+  --gold: 37 59% 57%;
+  --success: 151 48% 33%;
+  --warning: 36 86% 43%;
+  --danger: 0 60% 45%;
+  --info: 204 70% 38%;
+  --available: 151 48% 33%;
+  --booked: 36 86% 43%;
+  --sold: 0 60% 45%;
+  --upcoming: 204 70% 38%;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.125rem;
+  --radius-xl: 1.5rem;
+  --section-space: clamp(4.5rem, 9vw, 9rem);
+}
+
+.dark {
+  --ink: 39 38% 96%;
+  --paper: 222 25% 10%;
+  --stone: 220 20% 15%;
+  --stone-deep: 220 18% 20%;
+  --line: 220 14% 25%;
+  --text-secondary: 38 13% 73%;
+  --text-muted: 38 10% 57%;
+  --terracotta: 14 64% 57%;
+  --terracotta-deep: 14 64% 47%;
+  --moss: 151 27% 52%;
+  --gold: 39 70% 62%;
+  --success: 151 53% 52%;
+  --warning: 39 90% 61%;
+  --danger: 0 72% 66%;
+  --info: 204 90% 70%;
+  --available: 151 53% 52%;
+  --booked: 39 90% 61%;
+  --sold: 0 72% 66%;
+  --upcoming: 204 90% 70%;
+}

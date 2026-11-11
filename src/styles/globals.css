@@ -1,0 +1,147 @@
+@import './tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-line;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-paper text-ink antialiased;
+    font-family: var(--font-sans), 'Noto Sans Bengali', 'Manrope', 'Avenir Next', sans-serif;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+  ::selection {
+    background: hsl(var(--terracotta) / 0.18);
+    color: hsl(var(--ink));
+  }
+  :focus-visible {
+    outline: 2px solid hsl(var(--gold));
+    outline-offset: 4px;
+  }
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@layer components {
+  .display-type {
+    font-family: var(--font-display), 'Iowan Old Style', Baskerville, Georgia, serif;
+    font-weight: 600;
+    letter-spacing: -0.045em;
+  }
+  .eyebrow {
+    @apply text-[10px] font-bold uppercase tracking-[0.2em] text-terracotta;
+  }
+  .muted-copy {
+    color: hsl(var(--text-secondary));
+  }
+  .numeric {
+    font-variant-numeric: tabular-nums;
+  }
+  .container-shell {
+    @apply mx-auto w-full max-w-[1280px] px-5 sm:px-8 lg:px-10;
+  }
+  .section-space {
+    padding-block: var(--section-space);
+  }
+  .editorial-rule {
+    border-top: 1px solid hsl(var(--line));
+  }
+  .paper-panel {
+    @apply rounded-panel border border-line bg-paper shadow-soft;
+  }
+  .stone-panel {
+    @apply rounded-panel border border-line bg-stone;
+  }
+  .grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.08;
+    mix-blend-mode: soft-light;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.33'/%3E%3C/svg%3E");
+  }
+  .image-frame {
+    @apply relative overflow-hidden bg-stone;
+  }
+  .image-frame img {
+    @apply h-full w-full object-cover transition duration-700 ease-out;
+  }
+  .image-frame:hover img {
+    transform: scale(1.035);
+  }
+  .shimmer {
+    @apply relative overflow-hidden bg-stone;
+  }
+  .shimmer::after {
+    content: '';
+    @apply absolute inset-y-0 left-0 w-1/2 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/30 to-transparent;
+  }
+  .dark .shimmer::after {
+    @apply via-white/5;
+  }
+}
+
+/* Bengali script renders visually larger than Latin at the same px size
+   and needs extra leading for matras. Scale display type down and relax
+   the tight Latin-optimized tracking when the active locale is bn. */
+html[data-locale='bn'] .display-type {
+  font-family: var(--font-display), 'Noto Serif Bengali', 'Noto Sans Bengali', 'Iowan Old Style',
+    Georgia, serif;
+  letter-spacing: -0.01em;
+}
+html[data-locale='bn'] h1.display-type {
+  font-size: clamp(2.35rem, 10.5vw, 5.5rem) !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.02em !important;
+}
+html[data-locale='bn'] h2.display-type {
+  font-size: clamp(1.65rem, 5vw, 3.1rem) !important;
+  line-height: 1.18 !important;
+  letter-spacing: -0.01em !important;
+}
+html[data-locale='bn'] h3.display-type {
+  font-size: clamp(1.35rem, 3.8vw, 2.4rem) !important;
+  line-height: 1.22 !important;
+  letter-spacing: 0 !important;
+}
+html[data-locale='bn'] .display-type:not(h1):not(h2):not(h3) {
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+html[data-locale='bn'] body {
+  line-height: 1.7;
+}
+html[data-locale='bn'] .eyebrow {
+  letter-spacing: 0.12em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+html[data-motion-reduced='true'] *,
+html[data-motion-reduced='true'] *::before,
+html[data-motion-reduced='true'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
