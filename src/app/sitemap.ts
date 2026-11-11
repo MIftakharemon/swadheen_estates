@@ -1,8 +1,9 @@
 import type { MetadataRoute } from 'next'
 import { properties } from '@/data/properties'
+import { env } from '@/lib/env'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = 'http://localhost:3000'
+  const base = env.NEXT_PUBLIC_SITE_URL
   return [
     { url: base, changeFrequency: 'weekly', priority: 1 },
     { url: `${base}/properties`, changeFrequency: 'daily', priority: 0.9 },

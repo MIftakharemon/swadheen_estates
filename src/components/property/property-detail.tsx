@@ -17,6 +17,7 @@ import {
   Trees,
 } from 'lucide-react'
 import { propertyMeta, formatPrice } from '@/lib/format'
+import { env } from '@/lib/env'
 import type { Property } from '@/types/property'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
@@ -60,7 +61,7 @@ export function PropertyDetailPage({ property }: { property: Property }) {
           '@type': 'RealEstateListing',
           name: property.title,
           description: property.description,
-          url: `http://localhost:3000/properties/${property.slug}`,
+          url: `${env.NEXT_PUBLIC_SITE_URL}/properties/${property.slug}`,
           image: property.image,
           address: { '@type': 'PostalAddress', addressLocality: property.location, addressCountry: 'BD' },
           offers: {

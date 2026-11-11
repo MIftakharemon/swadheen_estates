@@ -5,9 +5,10 @@ import { RegisterServiceWorker } from '@/components/pwa/register-sw'
 import { MotionProvider } from '@/experience/motion/motion-provider'
 import { MotionTuningPanel } from '@/experience/motion/motion-tuning-panel'
 import { LocaleProvider } from '@/i18n/locale-provider'
+import { env } from '@/lib/env'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('http://localhost:3000'),
+  metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
   title: { default: 'স্বাধীন এস্টেটস — জায়গার অনুভূতির বাড়ি', template: '%s · স্বাধীন এস্টেটস' },
   description:
     'ঢাকায় নির্বাচিত জমি, বাড়ি এবং ফ্ল্যাট। পরিষ্কার তথ্য, সত্যিকারের মানুষ ও গোছানো বাড়ি।',

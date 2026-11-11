@@ -1,5 +1,6 @@
 import { HomePage } from '@/components/home/home-page'
 import { JsonLd } from '@/components/seo/json-ld'
+import { env } from '@/lib/env'
 
 export default function Page() {
   return (
@@ -9,7 +10,7 @@ export default function Page() {
           '@context': 'https://schema.org',
           '@type': 'Organization',
           name: 'Swadheen Estates',
-          url: 'http://localhost:3000',
+          url: env.NEXT_PUBLIC_SITE_URL,
           description: 'Thoughtfully selected land, houses and apartments across Dhaka.',
         }}
       />
