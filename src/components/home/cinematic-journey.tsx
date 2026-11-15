@@ -180,11 +180,21 @@ export function CinematicJourney() {
     if (!scroller) return
     const id = window.setInterval(() => {
       if (!scroller.clientWidth) return
-      const card = scroller.querySelector<HTMLElement>('[data-journey-card]')
-      if (!card) return
-      const step = card.offsetWidth + 16
-      const atEnd = scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 8
-      scroller.scrollTo({ left: atEnd ? 0 : scroller.scrollLeft + step, behavior: 'smooth' })
+      const cards = Array.from(scroller.querySelectorAll<HTMLElement>('[data-journey-card]'))
+      const [first, second] = cards
+      if (!first || !second) return
+      const step = second.offsetLeft - first.offsetLeft
+      if (!step) return
+      // Land exactly on a card boundary so each slide shows one full card,
+      // even when a manual swipe left the row between two cards.
+      const pad = parseFloat(window.getComputedStyle(scroller).scrollPaddingLeft) || 0
+      const current = Math.min(
+        cards.length - 1,
+        Math.max(0, Math.round((scroller.scrollLeft + pad - first.offsetLeft) / step)),
+      )
+      const target = cards[current + 1 >= cards.length ? 0 : current + 1]
+      if (!target) return
+      scroller.scrollTo({ left: target.offsetLeft - pad, behavior: 'smooth' })
     }, 4200)
     return () => window.clearInterval(id)
   }, [reducedMotion])
@@ -232,7 +242,7 @@ export function CinematicJourney() {
       <section className="bg-paper py-16 md:hidden">
         <div
           ref={cardScrollerRef}
-          className="flex gap-4 overflow-x-auto px-5 pb-2 [scrollbar-width:none] scroll-px-5 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden"
+          className="flex gap-4 overflow-x-auto pb-2 pl-5 pr-[14vw] [scrollbar-width:none] scroll-px-5 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden"
         >
           {scenes.map((scene) => (
             <article
