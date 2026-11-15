@@ -242,7 +242,7 @@ export function CinematicJourney() {
       <section className="bg-paper py-16 md:hidden">
         <div
           ref={cardScrollerRef}
-          className="flex gap-4 overflow-x-auto pb-2 pl-5 pr-[14vw] [scrollbar-width:none] scroll-px-5 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden"
+          className="flex gap-4 overflow-x-auto pb-2 px-[7vw] [scrollbar-width:none] scroll-px-[7vw] snap-x snap-mandatory [&::-webkit-scrollbar]:hidden"
         >
           {scenes.map((scene) => (
             <article
