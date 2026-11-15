@@ -97,6 +97,8 @@ export const en = {
   'home.featuredDescription':
     'Every listing is checked, photographed honestly and presented with the information you need to make a clear decision.',
   'home.featuredCta': 'View all properties',
+  'home.seeAll': 'See all',
+  'home.seeLess': 'Show less',
   'home.typesEyebrow': 'Start with what matters',
   'home.typesTitle': 'One good place. Many ways to get there.',
   'home.possibilities': 'possibilities',
@@ -198,8 +200,7 @@ export const en = {
   'videos.eyebrow': 'Real footage, nothing staged',
   'videos.title1': 'Watch the',
   'videos.title2': 'work closely.',
-  'videos.copy':
-    'A closer look at the thresholds, materials and light that make a place feel like yours.',
+  'videos.copy': 'A closer look at the thresholds, materials and light that make a place feel like yours.',
   'videos.autoPlaying': 'Auto-playing · sound off',
   'videos.short': 'Short',
   'videos.shortStoriesCopy':
@@ -733,8 +734,7 @@ export const en = {
   'dropzone.assetsReady': 'Assets are ready.',
   'dropzone.tooLarge': '{name} is over the {size} limit.',
   'dropzone.unsupportedType': '{name} is not a supported type.',
-  'dropzone.storageNotConfigured':
-    'Storage is not configured yet — uploads stay local for this demo.',
+  'dropzone.storageNotConfigured': 'Storage is not configured yet — uploads stay local for this demo.',
 
   // Project video manager
   'videos.new': 'New story',
@@ -983,8 +983,7 @@ export const bn: Record<CopyKey, string> = {
   // হিরো / হোম
   'home.eyebrow': 'ঢাকা · বাংলাদেশ · 2008 থেকে',
   'home.heroLine': 'বাড়ি যা',
-  'home.heroDescription':
-    'যেভাবে জীবন এখানে কাটে, সেভাবে নির্বাচিত জমি, বাড়ি ও ফ্ল্যাট — যত্নে বাছাই করা。',
+  'home.heroDescription': 'যেভাবে জীবন এখানে কাটে, সেভাবে নির্বাচিত জমি, বাড়ি ও ফ্ল্যাট — যত্নে বাছাই করা。',
   'home.scroll': 'স্ক্রল করে এক্সপ্লোর করুন',
   'home.statYearsLine1': 'বছরের',
   'home.statYearsLine2': 'স্থানীয় অভিজ্ঞতা',
@@ -998,6 +997,8 @@ export const bn: Record<CopyKey, string> = {
   'home.featuredDescription':
     'প্রতিটি লিস্টিং যাচাই করা, সৎ ছবি এবং সিদ্ধান্ত নেওয়ার প্রয়োজনীয় তথ্য সহ উপস্থাপিত.',
   'home.featuredCta': 'সব প্রোপার্টিজ দেখুন',
+  'home.seeAll': 'সব দেখুন',
+  'home.seeLess': 'কম দেখুন',
   'home.typesEyebrow': 'কমপক্ষে যা দরকার তা দিয়ে শুরু',
   'home.typesTitle': 'একটা ভালো জায়গা। পৌঁছানোর অনেক পথ।',
   'home.possibilities': 'সম্ভাবনা',
@@ -1045,11 +1046,10 @@ export const bn: Record<CopyKey, string> = {
   'journey.kicker4': 'আচার-অনুষ্ঠান / ধানমন্ডি',
   'journey.copy1':
     'প্রথম প্রবেশদ্বার একটি অনুভূতি: ছায়াযুক্ত প্রবেশদ্বার, বাগানবাড়ি উঠান, চাওয়ার আগেই যে ঘর খুলে যায়।',
-  'journey.copy2':
-    'একটি বাড়ি ছবি নয়। কিচেনে সকালের নাস্তা, টেরেসে শেষ কথাবার্তা এবং সবাই আসার জায়গা।',
-  'journey.copy3': 'যে স্বপ্নের জন্য শুধু সময় লাগে: পরিষ্কার জমি, উদার প্রান্ত এবং ভবিষ্যৎ নিজের করার স্বাধীনতা।',
-  'journey.copy4':
-    'সকালের নাস্তার টেবিলে আলো, পড়ার জন্য নিচু কোণ, সন্ধ্যার বাতাস ধরে নিচু টেরেস।',
+  'journey.copy2': 'একটি বাড়ি ছবি নয়। কিচেনে সকালের নাস্তা, টেরেসে শেষ কথাবার্তা এবং সবাই আসার জায়গা।',
+  'journey.copy3':
+    'যে স্বপ্নের জন্য শুধু সময় লাগে: পরিষ্কার জমি, উদার প্রান্ত এবং ভবিষ্যৎ নিজের করার স্বাধীনতা।',
+  'journey.copy4': 'সকালের নাস্তার টেবিলে আলো, পড়ার জন্য নিচু কোণ, সন্ধ্যার বাতাস ধরে নিচু টেরেস।',
   'journey.stat1': 'অনুষ্ঠানের চারপাশে রেসিডেন্স',
   'journey.stat2': 'পরিবারের জীবন রূপ দেওয়া স্তর',
   'journey.stat3': 'কাঠা, স্পষ্ট শিরোনাম',
@@ -1138,7 +1138,8 @@ export const bn: Record<CopyKey, string> = {
   'videos.removedFromCatalog': 'গল্প ক্যাটালগ থেকে সরানো হয়েছে।',
   'videos.reorderedNote': 'পাবলিক ক্রম আপডেট হয়েছে।',
   'videos.invalidUrl': 'সঠিক YouTube লিংক দিন।',
-  'videos.savedInBrowser': 'শুধু এই ব্রাউজারে সেভ করা হয়েছে। Listing মিডিয়া ততটই প্রোপার্টি পেজে দেখা যায়।',
+  'videos.savedInBrowser':
+    'শুধু এই ব্রাউজারে সেভ করা হয়েছে। Listing মিডিয়া ততটই প্রোপার্টি পেজে দেখা যায়।',
   'videos.savedInBrowserNoSync':
     'এই ব্রাউজারে সেভ করা। ব্যাকএন্ড স্টোরেজ সংযুক্ত হলে ভিডিও পরিবর্তন আপডেট হবে।',
   'videos.backToMedia': 'মিডিয়ায় ফিরে যান',
@@ -1170,8 +1171,7 @@ export const bn: Record<CopyKey, string> = {
   // লিস্টিং ফিল্টার
   'listings.eyebrow': 'যাচাইকত লিস্টিং',
   'listings.title': 'শুরু এক জায়গা থেকে.',
-  'listings.copy':
-    'প্রতিটি লিস্টিং যাচাই করা, ছবি সৎ এবং সিদ্ধান্ত নেওয়ার প্রয়োজনীয় তথ্য সহ উপস্থাপিত।',
+  'listings.copy': 'প্রতিটি লিস্টিং যাচাই করা, ছবি সৎ এবং সিদ্ধান্ত নেওয়ার প্রয়োজনীয় তথ্য সহ উপস্থাপিত।',
   'listings.resultsCount': '{count} স্থান এখন',
   'listings.curated': 'সাপ্তাহিক সিলেকশন',
   'listings.emptyTitle': 'এখানে কিছু নেই (এখন).',
@@ -1397,7 +1397,8 @@ export const bn: Record<CopyKey, string> = {
   'about.bringTitle1': 'স্থানীয় অভিজ্ঞতা,',
   'about.bringTitle2': 'প্রতুল শোর ছাড়া।',
   'about.point1Title': 'শুধু যাচাই করা লিস্টিং',
-  'about.point1Copy': 'সাইটে পরীক্ষা করা হয়, মালিকানা কাগজ পরীক্ষা করা হয় এবং আমরা নিজেদের পরিবারে দেখানো যায় না কিছুতে।',
+  'about.point1Copy':
+    'সাইটে পরীক্ষা করা হয়, মালিকানা কাগজ পরীক্ষা করা হয় এবং আমরা নিজেদের পরিবারে দেখানো যায় না কিছুতে।',
   'about.point2Title': 'প্র招生 দাম',
   'about.point2Copy': 'লুকানো কমিশন বা শেষ সময়ের পরিবর্তন নেই। আপনি প্রাথমিক থেকে পূর্ণ খরচ দেখেন।',
   'about.point3Title': 'ডিজাইন প্রথম সিলেকশন',
@@ -1435,8 +1436,7 @@ export const bn: Record<CopyKey, string> = {
   'project.ideaEyebrow': 'বিচ্ছিন্নতা',
   'project.ideaTitle1': 'কিছু তৈরি',
   'project.ideaTitle2': 'নিচুভাবে.',
-  'project.ideaCopy1':
-    'গ্রোভ একটি শোর উত্তর: নিচু, সবুজ এবং বন্য বাগানবাড়ির চারপাশে সাজানো।',
+  'project.ideaCopy1': 'গ্রোভ একটি শোর উত্তর: নিচু, সবুজ এবং বন্য বাগানবাড়ির চারপাশে সাজানো।',
   'project.ideaCopy2':
     'প্রতিটি রেসিডেন্স উঠানের মুখে হলো। পার্কিং এবং সার্ভিস নিচে। ফল: নম্র সাপ্তাহান্ত এবং নম্র শব্দ।',
   'project.statResidences': 'রেসিডেন্স',
@@ -1512,7 +1512,7 @@ export const bn: Record<CopyKey, string> = {
   'admin.enquiriesConversions': 'ইনকোয়ারি → কনভার্সন',
   'admin.enquiries': 'ইনকোয়ারি',
   'admin.qualified': 'যোগ্য',
-  'admin.todaysRhythm': "কালের গতি",
+  'admin.todaysRhythm': 'কালের গতি',
   'admin.yourNextVisits': 'আপনার আসন্ন ভিজিট',
   'admin.visitGrove3A': 'গ্রোভ ৩এ — ডুপ্লেক্স ভিজিট',
   'admin.discoveryCall': 'ডিসকভারি কল — জমি মালিক, ১৪০ কাঠা',

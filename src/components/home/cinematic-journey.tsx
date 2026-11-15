@@ -4,8 +4,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useScroll, useSpring, useTransform, type MotionValue } from 'framer-motion'
 import { ArrowDownRight, ArrowUpRight, MoveHorizontal, Sparkles } from 'lucide-react'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { ButtonLink } from '@/components/ui/button'
+import { useCardAutoSlide } from '@/components/home/use-card-auto-slide'
 import { useLocale } from '@/i18n/locale-provider'
 import { useMotionPreferences } from '@/experience/motion/motion-provider'
 import { cn } from '@/lib/utils'
@@ -174,30 +175,7 @@ export function CinematicJourney() {
 
   // Phone view: the same cards laid out in a row, sliding to the next card on a
   // timer. Manual swipes stay native; reduced motion leaves the row static.
-  useEffect(() => {
-    if (reducedMotion) return
-    const scroller = cardScrollerRef.current
-    if (!scroller) return
-    const id = window.setInterval(() => {
-      if (!scroller.clientWidth) return
-      const cards = Array.from(scroller.querySelectorAll<HTMLElement>('[data-journey-card]'))
-      const [first, second] = cards
-      if (!first || !second) return
-      const step = second.offsetLeft - first.offsetLeft
-      if (!step) return
-      // Land exactly on a card boundary so each slide shows one full card,
-      // even when a manual swipe left the row between two cards.
-      const pad = parseFloat(window.getComputedStyle(scroller).scrollPaddingLeft) || 0
-      const current = Math.min(
-        cards.length - 1,
-        Math.max(0, Math.round((scroller.scrollLeft + pad - first.offsetLeft) / step)),
-      )
-      const target = cards[current + 1 >= cards.length ? 0 : current + 1]
-      if (!target) return
-      scroller.scrollTo({ left: target.offsetLeft - pad, behavior: 'smooth' })
-    }, 4200)
-    return () => window.clearInterval(id)
-  }, [reducedMotion])
+  useCardAutoSlide(cardScrollerRef, '[data-journey-card]', true)
 
   return (
     <>

@@ -13,8 +13,9 @@ import {
   Sparkles,
   Waves,
 } from 'lucide-react'
+import { useRef, useState } from 'react'
 import { properties, propertyTypes } from '@/data/properties'
-import { ButtonLink } from '@/components/ui/button'
+import { Button, ButtonLink } from '@/components/ui/button'
 import { PropertyCard } from '@/components/property/property-card'
 import { SectionHeading } from '@/components/ui/section-heading'
 import { Header } from '@/components/layout/header'
@@ -26,6 +27,7 @@ import { DeferredYouTubeShowcase } from '@/components/home/deferred-youtube-show
 import { projectVideos } from '@/data/videos'
 import { HomeTypewriter } from '@/components/home/home-typewriter'
 import { CinematicJourney } from '@/components/home/cinematic-journey'
+import { useCardAutoSlide } from '@/components/home/use-card-auto-slide'
 import { useLocale } from '@/i18n/locale-provider'
 
 const journalImages = [
@@ -36,7 +38,11 @@ const journalImages = [
 
 export function HomePage() {
   const { t, locale } = useLocale()
-  const featured = properties.filter((property) => property.featured).slice(0, 4)
+  const featuredAll = properties.filter((property) => property.featured)
+  const featured = featuredAll.slice(0, 4)
+  const [featuredExpanded, setFeaturedExpanded] = useState(false)
+  const featuredScrollerRef = useRef<HTMLDivElement | null>(null)
+  useCardAutoSlide(featuredScrollerRef, '[data-featured-card]', !featuredExpanded)
   const journal = [
     {
       category: t('journal.categoryFieldNotes'),
@@ -140,13 +146,50 @@ export function HomePage() {
                 </ButtonLink>
               }
             />
-            <div className="mt-12 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-8 flex justify-end md:hidden">
+              <Button
+                variant="outline"
+                size="sm"
+                aria-expanded={featuredExpanded}
+                onClick={() => setFeaturedExpanded((open) => !open)}
+              >
+                {featuredExpanded ? t('home.seeLess') : t('home.seeAll')}
+                {featuredExpanded ? (
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                ) : (
+                  <ArrowDownRight className="h-3.5 w-3.5" />
+                )}
+              </Button>
+            </div>
+            <div className="mt-12 hidden gap-x-6 gap-y-12 sm:grid-cols-2 md:grid lg:grid-cols-4">
               {featured.map((property, index) => (
                 <Reveal key={property.id} delay={index * 0.06}>
                   <PropertyCard property={property} priority={index < 2} />
                 </Reveal>
               ))}
             </div>
+          </div>
+          <div className="md:hidden">
+            {featuredExpanded ? (
+              <div className="container-shell mt-12 grid gap-10">
+                {featuredAll.map((property, index) => (
+                  <Reveal key={property.id} delay={index * 0.06}>
+                    <PropertyCard property={property} priority={index < 2} />
+                  </Reveal>
+                ))}
+              </div>
+            ) : (
+              <div
+                ref={featuredScrollerRef}
+                className="mt-8 flex gap-5 overflow-x-auto px-[7vw] pb-2 [scrollbar-width:none] scroll-px-[7vw] snap-x snap-mandatory [&::-webkit-scrollbar]:hidden"
+              >
+                {featuredAll.map((property, index) => (
+                  <div key={property.id} data-featured-card className="w-[86vw] shrink-0 snap-start">
+                    <PropertyCard property={property} priority={index < 2} />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </section>
         <section className="section-space bg-stone">
