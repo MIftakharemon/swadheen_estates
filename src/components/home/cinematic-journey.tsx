@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useScroll, useSpring, useTransform, type MotionValue } from 'framer-motion'
 import { ArrowDownRight, ArrowUpRight, MoveHorizontal, Sparkles } from 'lucide-react'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { ButtonLink } from '@/components/ui/button'
 import { useLocale } from '@/i18n/locale-provider'
 import { useMotionPreferences } from '@/experience/motion/motion-provider'
@@ -20,7 +20,6 @@ type Scene = {
   href: string
   stat: string
   statLabelKey: string
-  align: 'left' | 'right'
 }
 
 const scenes: Scene[] = [
@@ -34,7 +33,6 @@ const scenes: Scene[] = [
     href: '/properties/the-grove-3a',
     stat: '48',
     statLabelKey: 'journey.stat1',
-    align: 'right',
   },
   {
     index: '02',
@@ -46,7 +44,6 @@ const scenes: Scene[] = [
     href: '/properties/gulshan-courtyard-house',
     stat: '3',
     statLabelKey: 'journey.stat2',
-    align: 'left',
   },
   {
     index: '03',
@@ -58,7 +55,6 @@ const scenes: Scene[] = [
     href: '/properties/purbachal-lakefront-plot',
     stat: '5',
     statLabelKey: 'journey.stat3',
-    align: 'right',
   },
   {
     index: '04',
@@ -70,7 +66,6 @@ const scenes: Scene[] = [
     href: '/projects/the-grove-bashundhara',
     stat: '2008',
     statLabelKey: 'journey.stat4',
-    align: 'left',
   },
 ]
 
@@ -104,7 +99,7 @@ function SceneImage({
         src={scene.image}
         alt={t(scene.altKey as never)}
         fill
-        sizes="(max-width: 768px) 92vw, 53vw"
+        sizes="(max-width: 1536px) 42vw, 32vw"
         className="object-cover"
         priority={index === 0}
       />
@@ -126,29 +121,7 @@ function JourneyScene({
   const { t } = useLocale()
   return (
     <article className="relative flex h-full w-1/4 shrink-0 items-center px-[7vw] py-16">
-      <div
-        className={cn(
-          'grid w-full max-w-[1320px] items-center gap-[7vw] lg:grid-cols-2',
-          scene.align === 'right' ? 'lg:[&>div:first-child]:order-2' : '',
-        )}
-      >
-        <div className="relative aspect-[.82] overflow-hidden rounded-[2rem] bg-stone shadow-float lg:aspect-[.96]">
-          <SceneImage scene={scene} index={index} progress={progress} reducedMotion={reducedMotion} />
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/50 via-transparent to-transparent" />
-          <div className="absolute left-5 top-5 flex items-center gap-2 rounded-full border border-white/30 bg-ink/20 px-3 py-2 text-[10px] font-bold uppercase tracking-[.15em] text-white backdrop-blur-md">
-            <span className="h-1.5 w-1.5 rounded-full bg-gold" /> {scene.index} / 04
-          </div>
-          <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-4 text-white">
-            <span className="max-w-[220px] text-xs leading-5 text-white/75">{t(scene.altKey as never)}</span>
-            <Link
-              href={scene.href}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/50 bg-white/10 transition hover:bg-gold hover:text-ink"
-              aria-label={`${t('journey.openPrefix')} ${t(scene.titleKey as never)}`}
-            >
-              <ArrowUpRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </div>
+      <div className="grid w-full max-w-[1320px] items-center gap-[7vw] md:grid-cols-2">
         <div className="max-w-xl">
           <p className="eyebrow text-terracotta">{t(scene.kickerKey as never)}</p>
           <h3 className="display-type mt-5 whitespace-pre-line text-[clamp(3.5rem,6.5vw,7.2rem)] leading-[.78] tracking-[-.06em]">
@@ -167,6 +140,23 @@ function JourneyScene({
             {t('stepInside')} <ArrowUpRight className="h-4 w-4" />
           </ButtonLink>
         </div>
+        <div className="relative aspect-[.82] overflow-hidden rounded-[2rem] bg-stone shadow-float lg:aspect-[.96]">
+          <SceneImage scene={scene} index={index} progress={progress} reducedMotion={reducedMotion} />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/50 via-transparent to-transparent" />
+          <div className="absolute left-5 top-5 flex items-center gap-2 rounded-full border border-white/30 bg-ink/20 px-3 py-2 text-[10px] font-bold uppercase tracking-[.15em] text-white backdrop-blur-md">
+            <span className="h-1.5 w-1.5 rounded-full bg-gold" /> {scene.index} / 04
+          </div>
+          <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-4 text-white">
+            <span className="max-w-[220px] text-xs leading-5 text-white/75">{t(scene.altKey as never)}</span>
+            <Link
+              href={scene.href}
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/50 bg-white/10 transition hover:bg-gold hover:text-ink"
+              aria-label={`${t('journey.openPrefix')} ${t(scene.titleKey as never)}`}
+            >
+              <ArrowUpRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
       </div>
     </article>
   )
@@ -174,12 +164,30 @@ function JourneyScene({
 
 export function CinematicJourney() {
   const sectionRef = useRef<HTMLElement>(null)
+  const cardScrollerRef = useRef<HTMLDivElement | null>(null)
   const { t } = useLocale()
   const { reducedMotion } = useMotionPreferences()
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end end'] })
   const progress = useSpring(scrollYProgress, { stiffness: 75, damping: 24, mass: 0.4 })
   const trackX = useTransform(progress, [0, 1], reducedMotion ? ['0%', '0%'] : ['0%', '-75%'])
   const progressWidth = useTransform(progress, [0, 1], ['0%', '100%'])
+
+  // Phone view: the same cards laid out in a row, sliding to the next card on a
+  // timer. Manual swipes stay native; reduced motion leaves the row static.
+  useEffect(() => {
+    if (reducedMotion) return
+    const scroller = cardScrollerRef.current
+    if (!scroller) return
+    const id = window.setInterval(() => {
+      if (!scroller.clientWidth) return
+      const card = scroller.querySelector<HTMLElement>('[data-journey-card]')
+      if (!card) return
+      const step = card.offsetWidth + 16
+      const atEnd = scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 8
+      scroller.scrollTo({ left: atEnd ? 0 : scroller.scrollLeft + step, behavior: 'smooth' })
+    }, 4200)
+    return () => window.clearInterval(id)
+  }, [reducedMotion])
 
   return (
     <>
@@ -221,37 +229,46 @@ export function CinematicJourney() {
           </motion.div>
         </div>
       </section>
-      <section className="space-y-5 bg-paper px-5 py-16 md:hidden">
-        {scenes.map((scene, index) => (
-          <article key={scene.index} className="overflow-hidden rounded-[1.5rem] border border-line bg-stone">
-            <div className="relative aspect-[4/3]">
-              <Image
-                src={scene.image}
-                alt={t(scene.altKey as never)}
-                fill
-                sizes="100vw"
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-ink/60 to-transparent" />
-              <span className="absolute bottom-4 left-4 text-[10px] font-bold uppercase tracking-[.16em] text-white">
-                {`${scene.index} · ${t(scene.kickerKey as never)}`}
-              </span>
-            </div>
-            <div className="p-6">
-              <p className="eyebrow">{t(scene.kickerKey as never)}</p>
-              <h3 className="display-type mt-3 whitespace-pre-line text-5xl leading-[.82]">
-                {t(scene.titleKey as never)}
-              </h3>
-              <p className="mt-4 text-sm leading-6 text-ink/60">{t(scene.copyKey as never)}</p>
-              <Link
-                href={scene.href}
-                className="mt-5 inline-flex items-center gap-2 text-xs font-bold text-terracotta"
-              >
-                {t('stepInside')} <ArrowUpRight className="h-3.5 w-3.5" />
-              </Link>
-            </div>
-          </article>
-        ))}
+      <section className="bg-paper py-16 md:hidden">
+        <div
+          ref={cardScrollerRef}
+          className="flex gap-4 overflow-x-auto px-5 pb-2 [scrollbar-width:none] scroll-px-5 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden"
+        >
+          {scenes.map((scene) => (
+            <article
+              key={scene.index}
+              data-journey-card
+              className="w-[86vw] shrink-0 snap-start overflow-hidden rounded-[1.5rem] border border-line bg-stone"
+            >
+              <div className="relative aspect-[4/3]">
+                <Image
+                  src={scene.image}
+                  alt={t(scene.altKey as never)}
+                  fill
+                  sizes="86vw"
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink/60 to-transparent" />
+                <span className="absolute bottom-4 left-4 text-[10px] font-bold uppercase tracking-[.16em] text-white">
+                  {`${scene.index} · ${t(scene.kickerKey as never)}`}
+                </span>
+              </div>
+              <div className="p-6">
+                <p className="eyebrow">{t(scene.kickerKey as never)}</p>
+                <h3 className="display-type mt-3 whitespace-pre-line text-5xl leading-[.82]">
+                  {t(scene.titleKey as never)}
+                </h3>
+                <p className="mt-4 text-sm leading-6 text-ink/60">{t(scene.copyKey as never)}</p>
+                <Link
+                  href={scene.href}
+                  className="mt-5 inline-flex items-center gap-2 text-xs font-bold text-terracotta"
+                >
+                  {t('stepInside')} <ArrowUpRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
     </>
   )
