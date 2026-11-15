@@ -633,6 +633,9 @@ export function AdminSettingsPage() {
           >
             {t('admin.companyBrand')}
           </button>
+          {/* Lead routing, notifications and security & access are not needed yet.
+              Kept in the code on purpose; uncomment these buttons to bring them back. */}
+          {/*
           <button
             type="button"
             className="w-full rounded-xl px-3 py-3 text-left text-xs font-bold text-ink/50 hover:bg-stone"
@@ -651,6 +654,7 @@ export function AdminSettingsPage() {
           >
             {t('admin.securityAccess')}
           </button>
+          */}
         </nav>
         <section className="rounded-panel border border-line bg-paper p-6 shadow-soft">
           <div className="flex items-center gap-3 border-b border-line pb-5">
