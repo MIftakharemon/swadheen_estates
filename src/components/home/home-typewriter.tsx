@@ -25,7 +25,10 @@ export function HomeTypewriter() {
   const [index, setIndex] = useState(0)
   const [text, setText] = useState(() => (reducedMotion ? (phrases[locale][0] ?? '') : ''))
   const [erasing, setErasing] = useState(false)
+  const [caretFits, setCaretFits] = useState(true)
   const timerRef = useRef<number | null>(null)
+  const textRef = useRef<HTMLSpanElement | null>(null)
+  const caretRef = useRef<HTMLSpanElement | null>(null)
 
   useEffect(() => {
     if (reducedMotion) {
@@ -62,18 +65,43 @@ export function HomeTypewriter() {
     }
   }, [text, erasing, index, list, reducedMotion])
 
+  // The caret follows the typed text, so on some viewport widths it would wrap
+  // onto a fresh line past the reserved box. Hide it there instead of letting
+  // it spill outside the headline.
+  useEffect(() => {
+    const caret = caretRef.current
+    const typed = textRef.current
+    if (!caret || !typed) return
+    const caretBox = caret.getBoundingClientRect()
+    const textBox = typed.getBoundingClientRect()
+    const fits = caretBox.top < textBox.bottom - 1
+    if (fits !== caretFits) setCaretFits(fits)
+  }, [text, caretFits])
+
   const caretVisible = !reducedMotion
 
   return (
-    <span className="inline-flex items-baseline whitespace-nowrap">
-      <span>{text}</span>
-      {caretVisible && (
-        <span
-          aria-hidden="true"
-          className="ml-1 inline-block w-[0.06em] shrink-0 animate-pulse bg-gold align-baseline"
-          style={{ height: '0.72em' }}
-        />
-      )}
+    <span className="relative block">
+      <span aria-hidden="true" className="grid invisible">
+        {list.map((phrase) => (
+          <span key={phrase} className="block" style={{ gridArea: '1 / 1' }}>
+            {phrase}
+          </span>
+        ))}
+      </span>
+      <span className="absolute inset-0">
+        <span ref={textRef}>{text}</span>
+        {caretVisible && (
+          <span
+            ref={caretRef}
+            aria-hidden="true"
+            className={`ml-1 inline-block w-[0.06em] shrink-0 animate-pulse bg-gold align-baseline${
+              caretFits ? '' : ' invisible'
+            }`}
+            style={{ height: '0.72em' }}
+          />
+        )}
+      </span>
       <span className="sr-only">{list.join('. ')}</span>
     </span>
   )

@@ -74,8 +74,8 @@ export function HomePage() {
               <p className="eyebrow text-gold">{t('home.eyebrow')}</p>
             </Reveal>
             <Reveal delay={0.1}>
-              <h1 className="display-type mt-6 overflow-hidden whitespace-nowrap text-[clamp(1.45rem,5.4vw,4rem)] leading-none tracking-tight sm:text-[clamp(1.75rem,5vw,4.25rem)] lg:text-[clamp(2rem,4.6vw,4.35rem)]">
-                <em className="font-normal not-italic text-gold">
+              <h1 className="display-type mt-6 text-[clamp(1.45rem,5.4vw,4rem)] leading-[1.06] tracking-tight sm:text-[clamp(1.75rem,5vw,4.25rem)] lg:text-[clamp(2rem,4.6vw,4.35rem)]">
+                <em className="block font-normal not-italic text-gold">
                   <HomeTypewriter key={locale} />
                 </em>
               </h1>
