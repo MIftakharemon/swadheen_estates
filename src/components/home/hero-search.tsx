@@ -38,7 +38,7 @@ export function HeroSearch() {
           <select
             value={type}
             onChange={(event) => setType(event.target.value)}
-            className="mt-1 w-full appearance-none bg-transparent text-xs font-bold outline-none"
+            className="mt-1 w-full appearance-none bg-transparent text-xs font-bold text-ink/40 outline-none"
           >
             <option value="Any type">{t('hero.anyType')}</option>
             <option value="Land">{t('type.land')}</option>
@@ -70,7 +70,7 @@ export function HeroSearch() {
           <select
             value={budget}
             onChange={(event) => setBudget(event.target.value)}
-            className="mt-1 w-full appearance-none bg-transparent text-xs font-bold outline-none"
+            className="mt-1 w-full appearance-none bg-transparent text-xs font-bold text-ink/40 outline-none"
           >
             <option value="Any budget">{t('budget.any')}</option>
             <option value="Under ৳1 Cr">{t('budget.under1Cr')}</option>
@@ -88,7 +88,7 @@ export function HeroSearch() {
           <select
             value={beds}
             onChange={(event) => setBeds(event.target.value)}
-            className="mt-1 w-full appearance-none bg-transparent text-xs font-bold outline-none"
+            className="mt-1 w-full appearance-none bg-transparent text-xs font-bold text-ink/40 outline-none"
           >
             <option value="Beds">{t('hero.bedsAny')}</option>
             <option value="2">{t('beds.2plus')}</option>
