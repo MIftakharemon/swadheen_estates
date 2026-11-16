@@ -16,7 +16,7 @@ import {
 import { useRef, useState } from 'react'
 import { properties, propertyTypes } from '@/data/properties'
 import { Button, ButtonLink } from '@/components/ui/button'
-import { PropertyCard } from '@/components/property/property-card'
+import { FeaturedCard } from '@/components/property/featured-card'
 import { SectionHeading } from '@/components/ui/section-heading'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
@@ -164,7 +164,7 @@ export function HomePage() {
             <div className="mt-12 hidden gap-x-6 gap-y-12 sm:grid-cols-2 md:grid lg:grid-cols-4">
               {featured.map((property, index) => (
                 <Reveal key={property.id} delay={index * 0.06}>
-                  <PropertyCard property={property} priority={index < 2} />
+                  <FeaturedCard property={property} priority={index < 2} />
                 </Reveal>
               ))}
             </div>
@@ -174,7 +174,7 @@ export function HomePage() {
               <div className="container-shell mt-12 grid gap-10">
                 {featuredAll.map((property, index) => (
                   <Reveal key={property.id} delay={index * 0.06}>
-                    <PropertyCard property={property} priority={index < 2} />
+                    <FeaturedCard property={property} priority={index < 2} />
                   </Reveal>
                 ))}
               </div>
@@ -185,7 +185,7 @@ export function HomePage() {
               >
                 {featuredAll.map((property, index) => (
                   <div key={property.id} data-featured-card className="w-[86vw] shrink-0 snap-start">
-                    <PropertyCard property={property} priority={index < 2} />
+                    <FeaturedCard property={property} priority={index < 2} />
                   </div>
                 ))}
               </div>
