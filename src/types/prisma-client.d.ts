@@ -1,7 +1,7 @@
 declare module '@prisma/client' {
   type SeedRecord = { id: string }
   type PropertyDelegate = {
-    findUnique(args: unknown): Promise<SeedRecord | null>
+    findUnique(args: unknown): Promise<{ id: string; title?: string } | null>
     upsert(args: unknown): Promise<SeedRecord>
   }
   type UserDelegate = {
@@ -35,8 +35,44 @@ declare module '@prisma/client' {
     delete(args: unknown): Promise<ProjectVideoRecord>
     upsert(args: unknown): Promise<ProjectVideoRecord>
   }
-  type LeadDelegate = { create(args: unknown): Promise<SeedRecord> }
+  type LeadRecord = {
+    id: string
+    name: string
+    email: string
+    phone: string
+    note: string | null
+    stage: string
+    source: string
+    createdAt: Date
+    property?: { title: string; slug: string } | null
+  }
+  type LeadDelegate = {
+    create(args: unknown): Promise<LeadRecord>
+    findMany(args: unknown): Promise<LeadRecord[]>
+  }
+  type NotificationRecord = {
+    id: string
+    audience: string
+    userId: string | null
+    type: string
+    title: string
+    body: string | null
+    link: string | null
+    meta: unknown
+    readAt: Date | null
+    createdAt: Date
+  }
+  type NotificationDelegate = {
+    create(args: unknown): Promise<NotificationRecord>
+    findMany(args: unknown): Promise<NotificationRecord[]>
+    count(args: unknown): Promise<number>
+    updateMany(args: unknown): Promise<{ count: number }>
+  }
   type AuditLogDelegate = { create(args: unknown): Promise<SeedRecord> }
+
+  export namespace Prisma {
+    type NotificationWhereInput = Record<string, unknown>
+  }
 
   export class PrismaClient {
     constructor(options?: { log?: string[] })
@@ -45,6 +81,7 @@ declare module '@prisma/client' {
     project: ProjectDelegate
     projectVideo: ProjectVideoDelegate
     lead: LeadDelegate
+    notification: NotificationDelegate
     auditLog: AuditLogDelegate
     $disconnect(): Promise<void>
   }

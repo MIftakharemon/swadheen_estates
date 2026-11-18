@@ -83,6 +83,7 @@ model User {
   visits        Visit[]
   auditLogs     AuditLog[]
   savedListings SavedProperty[]
+  notifications Notification[]
 }
 
 model Project {
@@ -244,6 +245,25 @@ model SavedProperty {
   property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   @@id([userId, propertyId])
+}
+
+// In-app notifications. "ADMIN" rows feed the admin panel bell (viewing requests,
+// lead updates); "USER" rows are scoped to a signed-in customer via userId.
+model Notification {
+  id        String    @id @default(cuid())
+  audience  String    @default("ADMIN")
+  userId    String?
+  type      String    @default("LEAD")
+  title     String
+  body      String?
+  link      String?
+  meta      Json?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([audience, createdAt])
+  @@index([userId, createdAt])
 }
 
 model AuditLog {

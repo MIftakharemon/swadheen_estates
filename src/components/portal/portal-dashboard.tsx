@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import {
   ArrowUpRight,
-  Bell,
   CalendarDays,
   CheckCircle2,
   ChevronRight,
@@ -16,6 +15,7 @@ import {
 import { properties } from '@/data/properties'
 import { PropertyCard } from '@/components/property/property-card'
 import { Button, ButtonLink } from '@/components/ui/button'
+import { NotificationBell } from '@/components/ui/notification-bell'
 import { useLocale } from '@/i18n/locale-provider'
 import { cn } from '@/lib/utils'
 
@@ -35,14 +35,7 @@ export function PortalDashboard() {
             SWADHEEN <span className="font-normal tracking-normal text-ink/40">/ {t('portal.mySpace')}</span>
           </Link>
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              className="relative flex h-10 w-10 items-center justify-center rounded-full bg-stone"
-              aria-label={t('notifications')}
-            >
-              <Bell className="h-4 w-4" />
-              <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-terracotta" />
-            </button>
+            <NotificationBell scope="user" tone="stone" />
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-terracotta text-[10px] font-extrabold text-white">
               NJ
             </span>

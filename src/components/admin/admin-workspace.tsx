@@ -23,14 +23,14 @@ import {
   Users,
   X,
 } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { properties } from '@/data/properties'
 import { Button, ButtonLink } from '@/components/ui/button'
 import { Badge, StatusBadge } from '@/components/ui/badge'
 import { useLocale } from '@/i18n/locale-provider'
 import { localizedText } from '@/i18n/localize'
 import { cn } from '@/lib/utils'
-import { formatPrice } from '@/lib/format'
+import { formatDateTime, formatPrice } from '@/lib/format'
 import { MediaDropzone } from '@/components/admin/media-dropzone'
 import { AdminProjectVideoManager } from '@/components/admin/project-video-manager'
 
@@ -243,8 +243,50 @@ export function AdminPropertiesPage() {
   )
 }
 
+// A real private-viewing request that came in through the public site.
+type ViewingRequest = {
+  id: string
+  name: string
+  email: string
+  phone: string
+  note?: string | null
+  property?: string | null
+  createdAt: string
+}
+
+function initialsOf(name: string) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase()
+}
+
 export function AdminLeadsPage() {
-  const { t } = useLocale()
+  const { t, locale } = useLocale()
+  const [requests, setRequests] = useState<ViewingRequest[]>([])
+  const [requestsLoaded, setRequestsLoaded] = useState(false)
+
+  useEffect(() => {
+    let active = true
+    fetch('/api/leads')
+      .then((response) => (response.ok ? response.json() : { leads: [] }))
+      .then((data: { leads?: ViewingRequest[] }) => {
+        if (active) setRequests(data.leads ?? [])
+      })
+      .catch(() => {
+        if (active) setRequests([])
+      })
+      .finally(() => {
+        if (active) setRequestsLoaded(true)
+      })
+    return () => {
+      active = false
+    }
+  }, [])
+
   return (
     <div className="mx-auto max-w-[1440px]">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
@@ -262,6 +304,67 @@ export function AdminLeadsPage() {
           </Button>
         </div>
       </div>
+      <section className="mt-8 rounded-panel border border-line bg-paper p-5 shadow-soft sm:p-6">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="eyebrow">{t('admin.recentRequests')}</p>
+            <h2 className="display-type mt-2 text-3xl">{t('admin.recentRequestsTitle')}</h2>
+            <p className="mt-2 text-sm text-ink/55">{t('admin.recentRequestsHint')}</p>
+          </div>
+          <span className="rounded-full bg-terracotta/10 px-3 py-1.5 text-[10px] font-extrabold text-terracotta">
+            {requests.length}
+          </span>
+        </div>
+        {requests.length === 0 ? (
+          <p className="mt-6 rounded-xl border border-dashed border-line px-4 py-8 text-center text-xs font-semibold text-ink/45">
+            {requestsLoaded ? t('admin.noRequests') : t('notif.loading')}
+          </p>
+        ) : (
+          <ul className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {requests.map((request) => (
+              <li
+                key={request.id}
+                className="rounded-xl border border-line bg-stone/50 p-4 transition hover:shadow-soft"
+              >
+                <div className="flex items-start gap-3">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-terracotta text-[10px] font-extrabold text-white">
+                    {initialsOf(request.name)}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-bold">{request.name}</p>
+                    <p className="mt-0.5 truncate text-[11px] font-semibold text-terracotta">
+                      {request.property ?? t('admin.anyProperty')}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-3 space-y-1">
+                  <a
+                    href={`tel:${request.phone}`}
+                    className="block truncate text-[11px] font-semibold text-ink/60 transition hover:text-terracotta"
+                  >
+                    {request.phone}
+                  </a>
+                  <a
+                    href={`mailto:${request.email}`}
+                    className="block truncate text-[11px] font-semibold text-ink/60 transition hover:text-terracotta"
+                  >
+                    {request.email}
+                  </a>
+                </div>
+                {request.note && (
+                  <p className="mt-3 line-clamp-2 rounded-lg bg-paper px-3 py-2 text-[11px] leading-4 text-ink/55">
+                    {request.note}
+                  </p>
+                )}
+                <p className="mt-3 flex items-center gap-1.5 border-t border-line pt-3 text-[10px] font-bold uppercase tracking-[.1em] text-ink/45">
+                  <Clock3 className="h-3 w-3 shrink-0" />
+                  {t('admin.requestedAt')}: {formatDateTime(request.createdAt, locale)}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
       <div className="mt-8 grid gap-4 overflow-x-auto pb-4 md:grid-cols-2 xl:grid-cols-4">
         {stages.map((stage) => (
           <section key={stage} className="min-w-[260px] rounded-panel border border-line bg-stone/55 p-3">

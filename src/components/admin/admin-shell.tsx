@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import {
-  Bell,
   Building2,
   CalendarDays,
   ChartNoAxesCombined,
@@ -24,6 +23,7 @@ import { useState } from 'react'
 import { adminNavigation } from '@/config/navigation'
 import { cn } from '@/lib/utils'
 import { Logo } from '@/components/layout/logo'
+import { NotificationBell } from '@/components/ui/notification-bell'
 import { useTheme } from '@/components/providers/theme-provider'
 import { useLocale } from '@/i18n/locale-provider'
 
@@ -199,14 +199,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             >
               <Plus className="h-4 w-4" />
             </button>
-            <button
-              type="button"
-              className="relative flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-stone"
-              aria-label={t('notifications')}
-            >
-              <Bell className="h-4 w-4" />
-              <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-terracotta" />
-            </button>
+            <NotificationBell scope="admin" />
             <button
               type="button"
               onClick={toggleTheme}

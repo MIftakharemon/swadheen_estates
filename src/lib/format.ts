@@ -21,6 +21,21 @@ export function formatNumber(value: number): string {
   return numberFormatter.format(value)
 }
 
+// "19 Nov 2026, 14:32" — used wherever an exact request time has to be visible
+// (admin viewing-request cards, notification bell).
+export function formatDateTime(value: string | Date, locale: 'en' | 'bn' = 'en'): string {
+  const date = typeof value === 'string' ? new Date(value) : value
+  if (Number.isNaN(date.getTime())) return ''
+  return new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : 'en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(date)
+}
+
 export function propertyMeta(property: Property): string {
   const parts = [
     property.beds ? `${property.beds} beds` : null,
