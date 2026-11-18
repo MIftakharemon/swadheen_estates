@@ -202,7 +202,7 @@ export function YouTubeShowcase({ videos }: { videos: ProjectVideo[] }) {
         </section>
       )}
       {featuredFilm && (
-        <section className="section-space bg-moss text-paper">
+        <section className="section-space border-y border-line bg-white/70 text-ink shadow-soft backdrop-blur-2xl dark:border-white/10 dark:bg-paper/10">
           <div className="container-shell">
             <div className="grid gap-10 lg:grid-cols-[1.2fr_.8fr] lg:items-center">
               <Reveal>
@@ -210,13 +210,13 @@ export function YouTubeShowcase({ videos }: { videos: ProjectVideo[] }) {
               </Reveal>
               <Reveal delay={0.12}>
                 <div>
-                  <p className="eyebrow text-gold">Wide films · YouTube</p>
+                  <p className="eyebrow">Wide films · YouTube</p>
                   <h2 className="display-type mt-4 text-5xl leading-[.88] sm:text-7xl">
                     Stay for
                     <br />
-                    <em className="font-normal text-gold">the long view.</em>
+                    <em className="font-normal text-terracotta">the long view.</em>
                   </h2>
-                  <p className="mt-6 max-w-md text-sm leading-7 text-paper/60">{featuredFilm.description}</p>
+                  <p className="mt-6 max-w-md text-sm leading-7 text-ink/60">{featuredFilm.description}</p>
                   <div className="mt-8 grid gap-2">
                     {films.map((film, index) => (
                       <button
@@ -227,8 +227,8 @@ export function YouTubeShowcase({ videos }: { videos: ProjectVideo[] }) {
                         className={cn(
                           'group flex items-center gap-3 rounded-2xl border p-2 text-left transition',
                           featuredFilm.id === film.id
-                            ? 'border-gold bg-white/10'
-                            : 'border-white/10 hover:border-gold/60 hover:bg-white/5',
+                            ? 'border-terracotta bg-white shadow-soft dark:bg-white/5'
+                            : 'border-line hover:border-terracotta/60 hover:bg-white/70 dark:hover:bg-white/5',
                         )}
                       >
                         <span className="relative aspect-video w-24 shrink-0 overflow-hidden rounded-xl bg-ink/60">
@@ -244,20 +244,20 @@ export function YouTubeShowcase({ videos }: { videos: ProjectVideo[] }) {
                           </span>
                         </span>
                         <span className="min-w-0 flex-1">
-                          <span className="block text-[10px] font-bold uppercase tracking-[.14em] text-gold">
+                          <span className="block text-[10px] font-bold uppercase tracking-[.14em] text-terracotta">
                             0{index + 1} · Wide film
                           </span>
-                          <span className="mt-1 block truncate text-sm font-bold text-paper group-hover:text-gold">
+                          <span className="mt-1 block truncate text-sm font-bold text-ink group-hover:text-terracotta">
                             {film.title}
                           </span>
                         </span>
-                        <ArrowUpRight className="h-4 w-4 shrink-0 text-paper/35 transition group-hover:text-gold" />
+                        <ArrowUpRight className="h-4 w-4 shrink-0 text-ink/35 transition group-hover:text-terracotta" />
                       </button>
                     ))}
                   </div>
                   <ButtonLink
                     href={featuredFilm.youtubeUrl}
-                    variant="dark"
+                    variant="primary"
                     className="mt-8"
                     target="_blank"
                     rel="noreferrer"

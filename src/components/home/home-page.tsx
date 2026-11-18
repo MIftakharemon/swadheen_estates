@@ -275,7 +275,7 @@ export function HomePage() {
             </div>
           </div>
         </section>
-        <section className="section-space bg-moss text-paper">
+        <section className="section-space border-y border-line bg-white/70 text-ink shadow-soft backdrop-blur-2xl dark:border-white/10 dark:bg-paper/10">
           <div className="container-shell">
             <div className="grid gap-12 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
               <Reveal>
@@ -300,40 +300,40 @@ export function HomePage() {
               </Reveal>
               <Reveal delay={0.12}>
                 <div>
-                  <p className="eyebrow text-gold">{t('home.tourEyebrow')}</p>
+                  <p className="eyebrow">{t('home.tourEyebrow')}</p>
                   <h2 className="display-type mt-4 text-5xl leading-[.9] sm:text-7xl">
                     {t('home.tourTitleLine1')}
                     <br />
-                    <em className="font-normal text-gold">{t('home.tourTitleLine2')}</em>
+                    <em className="font-normal text-terracotta">{t('home.tourTitleLine2')}</em>
                   </h2>
-                  <p className="mt-7 max-w-md text-sm leading-7 text-paper/60">{t('home.tourDescription')}</p>
-                  <ul className="mt-8 grid gap-4 text-sm text-paper/75 sm:grid-cols-2">
+                  <p className="mt-7 max-w-md text-sm leading-7 text-ink/60">{t('home.tourDescription')}</p>
+                  <ul className="mt-8 grid gap-4 text-sm text-ink/75 sm:grid-cols-2">
                     <li className="flex items-center gap-3">
-                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-gold">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-terracotta/10 text-terracotta">
                         <Check className="h-3.5 w-3.5" />
                       </span>
                       {t('home.tourCheck1')}
                     </li>
                     <li className="flex items-center gap-3">
-                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-gold">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-terracotta/10 text-terracotta">
                         <Check className="h-3.5 w-3.5" />
                       </span>
                       {t('home.tourCheck2')}
                     </li>
                     <li className="flex items-center gap-3">
-                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-gold">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-terracotta/10 text-terracotta">
                         <Check className="h-3.5 w-3.5" />
                       </span>
                       {t('home.tourCheck3')}
                     </li>
                     <li className="flex items-center gap-3">
-                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-gold">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-terracotta/10 text-terracotta">
                         <Check className="h-3.5 w-3.5" />
                       </span>
                       {t('home.tourCheck4')}
                     </li>
                   </ul>
-                  <ButtonLink href="/properties/the-grove-3a#experience" variant="dark" className="mt-9">
+                  <ButtonLink href="/properties/the-grove-3a#experience" variant="primary" className="mt-9">
                     {t('home.tourCta')} <ArrowUpRight className="h-4 w-4" />
                   </ButtonLink>
                 </div>
