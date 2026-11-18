@@ -127,7 +127,9 @@ export function PropertyDetailPage({ property }: { property: Property }) {
               badge={
                 <>
                   <Badge tone="dark">{typeValue}</Badge>
+                  {/* 360° badge switched off for now.
                   {property.has360 && <Badge tone="dark">{t('detail.tour360')}</Badge>}
+                  */}
                 </>
               }
             />

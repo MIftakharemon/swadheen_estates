@@ -1,7 +1,9 @@
 'use client'
 
 import Image from 'next/image'
+/* dynamic() import for the 3D / 360° canvases — switched off for now.
 import dynamic from 'next/dynamic'
+*/
 import {
   Compass,
   Expand,
@@ -26,6 +28,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { InteractiveSiteMap } from '@/components/experience/interactive-site-map'
 
+/* 3D / 360° features are switched off for now. Restore these two loaders when needed.
 const HouseModelCanvas = dynamic(
   () => import('@/components/experience/interactive-canvas').then((module) => module.HouseModelCanvas),
   {
@@ -48,8 +51,9 @@ const TourCanvas = dynamic(
     ),
   },
 )
+*/
 
-type ExperienceTab = 'Photos' | '360° tour' | '3D model' | 'Floor plan' | 'Map'
+type ExperienceTab = 'Photos' /* | '360° tour' | '3D model' */ | 'Floor plan' | 'Map'
 
 function Control({
   active,
@@ -78,6 +82,7 @@ function Control({
   )
 }
 
+/* 360° panorama panel — switched off for now.
 function TourPanel({ property }: { property: Property }) {
   const [room, setRoom] = useState('Living room')
   const rooms = ['Living room', 'Kitchen', 'Primary suite', 'Terrace']
@@ -162,6 +167,9 @@ function TourPanel({ property }: { property: Property }) {
   )
 }
 
+*/
+
+/* 3D model panel — switched off for now.
 function ModelPanel({ property }: { property: Property }) {
   const [mode, setMode] = useState<'furnished' | 'empty'>('furnished')
   const [lighting, setLighting] = useState<'day' | 'night'>('day')
@@ -271,6 +279,8 @@ function ModelPanel({ property }: { property: Property }) {
   )
 }
 
+*/
+
 function FloorPlanPanel() {
   const [selected, setSelected] = useState('Living / dining')
   const rooms = [
@@ -321,12 +331,14 @@ function FloorPlanPanel() {
           >
             <RotateCcw className="h-3.5 w-3.5" /> Isometric
           </button>
+          {/* 3D walkthrough button switched off for now.
           <button
             type="button"
             className="flex h-9 items-center gap-1.5 rounded-full bg-ink px-3 text-[10px] font-bold text-paper"
           >
             <Move3D className="h-3.5 w-3.5" /> Walkthrough
           </button>
+          */}
         </div>
       </div>
     </div>
@@ -339,7 +351,7 @@ function MapPanel({ property }: { property: Property }) {
 
 export function MediaExperience({ property }: { property: Property }) {
   const [tab, setTab] = useState<ExperienceTab>('Photos')
-  const tabs: ExperienceTab[] = ['Photos', '360° tour', '3D model', 'Floor plan', 'Map']
+  const tabs: ExperienceTab[] = ['Photos', /* '360° tour', '3D model', */ 'Floor plan', 'Map']
   return (
     <section id="experience" className="mt-14 scroll-mt-24">
       <div className="-mx-1 flex items-center gap-1 overflow-x-auto border-b border-line px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -392,8 +404,10 @@ export function MediaExperience({ property }: { property: Property }) {
             </div>
           </div>
         )}
+        {/* 3D / 360° tabs switched off for now.
         {tab === '360° tour' && <TourPanel property={property} />}
         {tab === '3D model' && <ModelPanel property={property} />}
+        */}
         {tab === 'Floor plan' && <FloorPlanPanel />}
         {tab === 'Map' && <MapPanel property={property} />}
       </div>

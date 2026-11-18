@@ -371,6 +371,7 @@ export function PropertyCard({
         <div className="absolute inset-x-3 bottom-3 z-10 flex items-end justify-between gap-2">
           <div className="flex flex-wrap gap-1.5">
             {property.verified && <VerifiedBadge dark />}
+            {/* 3D / 360° features are switched off for now — restore these two blocks when needed.
             {property.has3d && (
               <Badge tone="dark" icon={<Waves className="h-3 w-3" />}>
                 3D
@@ -381,6 +382,7 @@ export function PropertyCard({
                 {t('badge.tour')}
               </Badge>
             )}
+            */}
             {property.hasVideo && (
               <Badge tone="dark" icon={<Play className="h-3 w-3 fill-current" />}>
                 {t('badge.video')}
