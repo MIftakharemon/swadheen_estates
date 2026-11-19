@@ -29,7 +29,9 @@ const WishlistContext = createContext<WishlistContextValue | null>(null)
 // Wishlist state for the whole app. Saving requires an account: anonymous
 // visitors get a toast with a sign-in link instead of a silent failure.
 export function WishlistProvider({ children }: { children: ReactNode }) {
-  const { status } = useSession()
+  // Same no-SessionProvider guard as ProfileMenu: without a provider above us
+  // useSession() returns undefined, and destructuring it would crash the render.
+  const { status } = useSession() ?? { data: null, status: 'unauthenticated' }
   const { toast } = useToast()
   const { t } = useLocale()
   const pathname = usePathname()

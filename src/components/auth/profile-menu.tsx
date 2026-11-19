@@ -27,7 +27,11 @@ function initialsOf(name: string | null | undefined, email: string | null | unde
 // links, signed-in users get their space, admin panel (staff) and sign out.
 export function ProfileMenu({ overlay = false }: { overlay?: boolean }) {
   const { t } = useLocale()
-  const { data: session, status } = useSession()
+  // next-auth's useSession() yields undefined when no SessionProvider is
+  // mounted — which happens when this header (pulled in via loading.tsx)
+  // renders inside the /_global-error tree, a route that excludes the root
+  // layout. Degrade to the signed-out view instead of crashing the prerender.
+  const { data: session, status } = useSession() ?? { data: null, status: 'unauthenticated' }
   const pathname = usePathname()
   const router = useRouter()
   const [open, setOpen] = useState(false)
