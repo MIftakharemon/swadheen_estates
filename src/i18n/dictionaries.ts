@@ -464,7 +464,44 @@ export const en = {
   'login.continueTitle2': 'left off.',
   'login.detailsTitle': 'Details',
   'login.detailsTitle2': 'stay private.',
-  'login.newToSwadheen': 'New to Swadheen? Your invite link opens your portal.',
+  'login.newToSwadheen': 'New to Swadheen?',
+
+  // Profile menu — the account entry in the header
+  'profile.menu': 'Account',
+  'profile.signIn': 'Sign in',
+  'profile.createAccount': 'Create an account',
+  'profile.mySpace': 'My space',
+  'profile.savedHomes': 'Saved homes',
+  'profile.adminPanel': 'Admin panel',
+  'profile.signOut': 'Sign out',
+
+  // Register page
+  'register.eyebrow': 'Create your account',
+  'register.title1': 'Save the homes',
+  'register.title2': 'you love.',
+  'register.copy':
+    'Create an account to save properties, build a shortlist and follow your enquiries.',
+  'register.name': 'Full name',
+  'register.confirmPassword': 'Confirm password',
+  'register.submit': 'Create an account',
+  'register.creating': 'Creating your account…',
+  'register.haveAccount': 'Already have an account?',
+  'register.panelCopy': 'A quiet place for the homes you are considering.',
+
+  // Auth form errors — API status codes are mapped to these on the client
+  'form.emailTaken': 'An account with this email already exists. Please sign in instead.',
+  'form.passwordMismatch': 'The passwords do not match.',
+  'form.registerError': 'We could not create your account. Please try again.',
+  'form.tooManyAttempts': 'Too many attempts. Please wait a moment and try again.',
+  'form.accountUnavailable': 'Account creation is unavailable right now.',
+
+  // Wishlist prompts (toast notifications)
+  'toast.loginRequiredTitle': 'Sign in required',
+  'toast.loginRequiredBody':
+    'Sign in or create an account to save this property to your wishlist.',
+  'toast.saveFailedTitle': 'Could not save',
+  'toast.saveFailedBody': 'Please try again in a moment.',
+  'detail.saved': 'Saved',
 
   // Portal
   'portal.goodMorning': 'Good morning',
@@ -1371,7 +1408,42 @@ export const bn: Record<CopyKey, string> = {
   'login.continueTitle2': 'থেকে যাওয়া।',
   'login.detailsTitle': 'বিস্তারিত',
   'login.detailsTitle2': 'প্রাইভেট থাকে।',
-  'login.newToSwadheen': 'Swadheen-এ নতুন? আপনার ইনভাইট লিংক পোর্টাল খুলবে।',
+  'login.newToSwadheen': 'Swadheen-এ নতুন?',
+
+  // প্রোফাইল মেনু — হেডারের অ্যাকাউন্ট এন্ট্রি
+  'profile.menu': 'অ্যাকাউন্ট',
+  'profile.signIn': 'সাইন ইন',
+  'profile.createAccount': 'অ্যাকাউন্ট খুলুন',
+  'profile.mySpace': 'আমার স্পেস',
+  'profile.savedHomes': 'সেভ করা বাড়ি',
+  'profile.adminPanel': 'অ্যাডমিন প্যানেল',
+  'profile.signOut': 'সাইন আউট',
+
+  // রেজিস্টার পেজ
+  'register.eyebrow': 'আপনার অ্যাকাউন্ট খুলুন',
+  'register.title1': 'পছন্দের বাড়ি',
+  'register.title2': 'সেভ করে রাখুন।',
+  'register.copy': 'প্রপার্টি সেভ করতে, শর্টলিস্ট বানাতে ও আপনার রিকোয়েস্ট অনুসরণ করতে অ্যাকাউন্ট খুলুন।',
+  'register.name': 'পুরো নাম',
+  'register.confirmPassword': 'পাসওয়ার্ড আবার লিখুন',
+  'register.submit': 'অ্যাকাউন্ট খুলুন',
+  'register.creating': 'অ্যাকাউন্ট খোলা হচ্ছে…',
+  'register.haveAccount': 'ইতিমধ্যে অ্যাকাউন্ট আছে?',
+  'register.panelCopy': 'আপনার বিবেচ্য বাড়িগুলোর জন্য একটি শান্ত জায়গা।',
+
+  // অথ ফর্মের ত্রুটি — API status code ক্লায়েন্টে এগুলোতে ম্যাপ হয়
+  'form.emailTaken': 'এই ইমেইলে ইতিমধ্যে অ্যাকাউন্ট আছে। অনুগ্রহ করে সাইন ইন করুন।',
+  'form.passwordMismatch': 'পাসওয়ার্ড দুটি মিলছে না।',
+  'form.registerError': 'আপনার অ্যাকাউন্ট খোলা যায়নি। আবার চেষ্টা করুন।',
+  'form.tooManyAttempts': 'অনেকবার চেষ্টা হয়েছে। একটু পরে আবার চেষ্টা করুন।',
+  'form.accountUnavailable': 'এই মুহূর্তে অ্যাকাউন্ট খোলা যাচ্ছে না।',
+
+  // উইশলিস্ট প্রম্পট (টোস্ট নোটিফিকেশন)
+  'toast.loginRequiredTitle': 'সাইন ইন প্রয়োজন',
+  'toast.loginRequiredBody': 'এই প্রপার্টি উইশলিস্টে সেভ করতে সাইন ইন বা অ্যাকাউন্ট খুলুন।',
+  'toast.saveFailedTitle': 'সেভ করা যায়নি',
+  'toast.saveFailedBody': 'একটু পরে আবার চেষ্টা করুন।',
+  'detail.saved': 'সেভ করা',
 
   // পোর্টাল
   'portal.goodMorning': 'শুভ সকাল',

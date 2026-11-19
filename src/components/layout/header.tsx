@@ -10,6 +10,7 @@ import { ButtonLink } from '@/components/ui/button'
 import { Logo } from '@/components/layout/logo'
 import { useTheme } from '@/components/providers/theme-provider'
 import { LanguageToggle } from '@/components/layout/language-toggle'
+import { ProfileMenu } from '@/components/auth/profile-menu'
 import { useLocale } from '@/i18n/locale-provider'
 
 export function Header({ overlay = false }: { overlay?: boolean }) {
@@ -81,6 +82,7 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
           >
             {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
           </button>
+          <ProfileMenu overlay={overlay} />
           <LanguageToggle overlay={overlay} />
           <ButtonLink
             href="/properties"

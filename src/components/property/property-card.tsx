@@ -28,6 +28,7 @@ import { Badge, FeatureBadge, StatusBadge, VerifiedBadge } from '@/components/ui
 import { motionFeatureFlags } from '@/experience/motion/feature-flags'
 import { useMotionPreferences } from '@/experience/motion/motion-provider'
 import { useLocale } from '@/i18n/locale-provider'
+import { useWishlist } from '@/features/wishlist/wishlist-provider'
 import { localizedText } from '@/i18n/localize'
 
 function TypeMark({ type }: { type: Property['type'] }) {
@@ -218,8 +219,9 @@ export function PropertyCard({
   variant?: 'grid' | 'list' | 'compact' | 'map'
   priority?: boolean
 }) {
-  const [saved, setSaved] = useState(false)
+  const { isSaved, toggleSaved } = useWishlist()
   const [compared, setCompared] = useState(false)
+  const saved = isSaved(property.slug)
   const { locale, t } = useLocale()
   const title = localizedText(property.title, property.titleBn, locale)
   const typeLabel = t(`type.${property.type.toLowerCase()}` as 'type.land' | 'type.house' | 'type.flat')
@@ -296,7 +298,7 @@ export function PropertyCard({
               <ActionButton
                 label={saved ? t('a11y.unsaveProperty') : t('a11y.saveProperty')}
                 active={saved}
-                onClick={() => setSaved(!saved)}
+                onClick={() => toggleSaved({ slug: property.slug })}
               >
                 <Heart className="h-4 w-4" fill={saved ? 'currentColor' : 'none'} />
               </ActionButton>
@@ -355,7 +357,7 @@ export function PropertyCard({
             <ActionButton
               label={saved ? t('a11y.unsaveProperty') : t('a11y.saveProperty')}
               active={saved}
-              onClick={() => setSaved(!saved)}
+              onClick={() => toggleSaved({ slug: property.slug })}
             >
               <Heart className="h-4 w-4" fill={saved ? 'currentColor' : 'none'} />
             </ActionButton>

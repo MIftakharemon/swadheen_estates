@@ -31,6 +31,8 @@ import { properties } from '@/data/properties'
 import { JsonLd } from '@/components/seo/json-ld'
 import { useLocale } from '@/i18n/locale-provider'
 import { localizedText } from '@/i18n/localize'
+import { cn } from '@/lib/utils'
+import { useWishlist } from '@/features/wishlist/wishlist-provider'
 
 function Spec({ icon: Icon, label, value }: { icon: typeof BedDouble; label: string; value: string }) {
   return (
@@ -48,6 +50,8 @@ function Spec({ icon: Icon, label, value }: { icon: typeof BedDouble; label: str
 
 export function PropertyDetailPage({ property }: { property: Property }) {
   const { locale, t } = useLocale()
+  const { isSaved, toggleSaved } = useWishlist()
+  const saved = isSaved(property.slug)
   const title = localizedText(property.title, property.titleBn, locale)
   const typeValue = t(`type.${property.type.toLowerCase()}` as 'type.land' | 'type.house' | 'type.flat')
   const similar = properties
@@ -105,9 +109,18 @@ export function PropertyDetailPage({ property }: { property: Property }) {
             <div className="flex gap-2">
               <button
                 type="button"
-                className="flex h-11 items-center gap-2 rounded-full border border-line px-4 text-xs font-bold transition hover:border-terracotta hover:text-terracotta"
+                onClick={() => toggleSaved({ slug: property.slug })}
+                aria-label={saved ? t('a11y.unsaveProperty') : t('a11y.saveProperty')}
+                aria-pressed={saved}
+                className={cn(
+                  'flex h-11 items-center gap-2 rounded-full border px-4 text-xs font-bold transition',
+                  saved
+                    ? 'border-terracotta text-terracotta'
+                    : 'border-line hover:border-terracotta hover:text-terracotta',
+                )}
               >
-                <Heart className="h-4 w-4" /> {t('detail.save')}
+                <Heart className="h-4 w-4" fill={saved ? 'currentColor' : 'none'} />{' '}
+                {saved ? t('detail.saved') : t('detail.save')}
               </button>
               <button
                 type="button"

@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from 'next'
 import '@/styles/globals.css'
 import { ThemeProvider } from '@/components/providers/theme-provider'
+import { AuthSessionProvider } from '@/components/providers/session-provider'
+import { ToastProvider } from '@/components/providers/toast-provider'
+import { WishlistProvider } from '@/features/wishlist/wishlist-provider'
 import { RegisterServiceWorker } from '@/components/pwa/register-sw'
 import { MotionProvider } from '@/experience/motion/motion-provider'
 import { MotionTuningPanel } from '@/experience/motion/motion-tuning-panel'
@@ -35,10 +38,16 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <ThemeProvider>
           <MotionProvider>
             <LocaleProvider>
-              <RegisterServiceWorker />
-              {children}
-              {process.env.NODE_ENV === 'development' &&
-                process.env.NEXT_PUBLIC_ENABLE_MOTION_TUNING === 'true' && <MotionTuningPanel />}
+              <AuthSessionProvider>
+                <ToastProvider>
+                  <WishlistProvider>
+                    <RegisterServiceWorker />
+                    {children}
+                    {process.env.NODE_ENV === 'development' &&
+                      process.env.NEXT_PUBLIC_ENABLE_MOTION_TUNING === 'true' && <MotionTuningPanel />}
+                  </WishlistProvider>
+                </ToastProvider>
+              </AuthSessionProvider>
             </LocaleProvider>
           </MotionProvider>
         </ThemeProvider>

@@ -4,7 +4,20 @@ declare module '@prisma/client' {
     findUnique(args: unknown): Promise<{ id: string; title?: string } | null>
     upsert(args: unknown): Promise<SeedRecord>
   }
+  type SavedPropertyRecord = {
+    userId: string
+    propertyId: string
+    createdAt: Date
+    property?: { slug: string }
+  }
+  type SavedPropertyDelegate = {
+    findMany(args: unknown): Promise<Array<{ property: { slug: string } }>>
+    findUnique(args: unknown): Promise<SavedPropertyRecord | null>
+    create(args: unknown): Promise<SavedPropertyRecord>
+    delete(args: unknown): Promise<SavedPropertyRecord>
+  }
   type UserDelegate = {
+    create(args: unknown): Promise<SeedRecord>
     upsert(args: unknown): Promise<SeedRecord>
     findUnique(
       args: unknown,
@@ -74,6 +87,31 @@ declare module '@prisma/client' {
     type NotificationWhereInput = Record<string, unknown>
   }
 
+  // Scalar shape of PropertyCreateInput — enough for typed create/upsert data
+  // without pulling the whole generated client into the ambient stub.
+  export type PropertyCreateInput = {
+    slug: string
+    title: string
+    type: PropertyType
+    status?: PropertyStatus
+    inventory?: InventoryStatus
+    location: string
+    city: string
+    description: string
+    priceMinor: bigint | number
+    area: number | string
+    areaUnit?: string
+    bedrooms?: number | null
+    bathrooms?: number | null
+    floor?: number | null
+    facing?: string | null
+    featured?: boolean
+    verified?: boolean
+    focalX?: number
+    focalY?: number
+    publishedAt?: Date | string
+  }
+
   export class PrismaClient {
     constructor(options?: { log?: string[] })
     property: PropertyDelegate
@@ -81,6 +119,7 @@ declare module '@prisma/client' {
     project: ProjectDelegate
     projectVideo: ProjectVideoDelegate
     lead: LeadDelegate
+    savedProperty: SavedPropertyDelegate
     notification: NotificationDelegate
     auditLog: AuditLogDelegate
     $disconnect(): Promise<void>

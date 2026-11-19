@@ -49,8 +49,11 @@ export function LoginPageContent({ nextPath }: { nextPath: string }) {
             </div>
             <p className="mt-8 text-center text-xs text-ink/45">
               {t('login.newToSwadheen')}{' '}
-              <Link href="/request" className="font-bold text-terracotta">
-                {t('startConversation')} <ArrowUpRight className="ml-1 inline h-3 w-3" />
+              <Link
+                href={`/register?next=${encodeURIComponent(nextPath)}`}
+                className="font-bold text-terracotta"
+              >
+                {t('profile.createAccount')} <ArrowUpRight className="ml-1 inline h-3 w-3" />
               </Link>
             </p>
           </div>
