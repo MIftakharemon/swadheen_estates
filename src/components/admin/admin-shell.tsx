@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import {
   Building2,
   CalendarDays,
@@ -29,6 +30,14 @@ import { useLocale } from '@/i18n/locale-provider'
 
 const icons = { LayoutDashboard, Building2, Users, CalendarDays, Images, ChartNoAxesCombined, Video }
 
+// The sidebar highlight has to follow the section you are actually in, so a
+// section matches exactly, and nested routes (e.g. /admin/properties/x) match
+// their parent entry — except /admin itself, which would match everything.
+function isSectionActive(href: string, pathname: string) {
+  if (href === '/admin') return pathname === '/admin'
+  return pathname === href || pathname.startsWith(`${href}/`)
+}
+
 const adminLabels: Record<string, string> = {
   Overview: 'admin.overview',
   Properties: 'admin.properties',
@@ -44,6 +53,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
   const { t } = useLocale()
+  const pathname = usePathname()
+  const activeSection = adminNavigation.find((item) => isSectionActive(item.href, pathname))
+  const settingsActive = isSectionActive('/admin/settings', pathname)
   return (
     <div className="min-h-screen bg-stone/45 text-ink">
       <aside
@@ -91,7 +103,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   onClick={() => setMobileOpen(false)}
                   className={cn(
                     'group flex items-center gap-3 rounded-xl px-3 py-3 text-xs font-bold text-ink/55 transition hover:bg-stone hover:text-ink',
-                    item.href === '/admin' && 'bg-terracotta/10 text-terracotta',
+                    isSectionActive(item.href, pathname) && 'bg-terracotta/10 text-terracotta',
                     collapsed && 'justify-center px-0',
                   )}
                 >
@@ -123,6 +135,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               href="/admin/settings"
               className={cn(
                 'mt-3 flex items-center gap-3 rounded-xl px-3 py-3 text-xs font-bold text-ink/55 transition hover:bg-stone hover:text-ink',
+                settingsActive && 'bg-terracotta/10 text-terracotta',
                 collapsed && 'justify-center px-0',
               )}
             >
@@ -178,7 +191,13 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <div className="hidden items-center gap-2 text-xs font-semibold text-ink/45 sm:flex">
               <span>{t('admin.workspace')}</span>
               <span>/</span>
-              <span className="text-ink">{t('admin.overview')}</span>
+              <span className="text-ink">
+                {settingsActive
+                  ? t('admin.settings')
+                  : activeSection
+                    ? t(adminLabels[activeSection.label] as never)
+                    : t('admin.overview')}
+              </span>
             </div>
             <label className="hidden h-10 items-center gap-2 rounded-full border border-line bg-stone/50 px-3 sm:flex">
               <Search className="h-3.5 w-3.5 text-ink/35" />
