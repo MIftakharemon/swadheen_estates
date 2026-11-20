@@ -36,8 +36,8 @@ import { AdminProjectVideoManager } from '@/components/admin/project-video-manag
 
 const leads = [
   {
-    name: 'Nusrat Jahan',
-    initials: 'NJ',
+    name: 'Tanjila Rahman',
+    initials: 'TR',
     propertyKey: 'admin.leadGrove3A',
     stage: 'New',
     score: 78,
@@ -559,10 +559,10 @@ export function AdminVisitsPage() {
             </div>
             <div className="p-3" />
             <div className="p-3">
-              <VisitCard time="16:00" name="Nusrat Jahan" color="bg-moss/20" />
+              <VisitCard time="16:00" name="Tanjila Rahman" color="bg-moss/20" />
             </div>
             <div className="p-3">
-              <VisitCard time="15:30" name="Nusrat Jahan" color="bg-gold/30" />
+              <VisitCard time="15:30" name="Imran Hossain" color="bg-gold/30" />
             </div>
             <div className="p-3">
               <VisitCard time="11:00" name={t('admin.walkInGrove')} color="bg-terracotta/15" />

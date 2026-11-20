@@ -146,7 +146,7 @@ export function PortalDashboard() {
                   <p className="mt-1 text-xs text-paper/50">{t('portal.advisorRole')}</p>
                 </div>
                 <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#c8a49c] text-xs font-extrabold text-ink">
-                  AR
+                  SE
                 </span>
               </div>
               <p className="mt-5 text-sm leading-6 text-paper/60">{t('portal.advisorQuote')}</p>

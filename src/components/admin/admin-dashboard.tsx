@@ -59,8 +59,8 @@ const kpis = [
 
 const leads = [
   {
-    name: 'Nusrat Jahan',
-    initials: 'NJ',
+    name: 'Tanjila Rahman',
+    initials: 'TR',
     propertyKey: 'admin.leadGroveResidence',
     sourceKey: 'admin.sourceWebsite',
     stageKey: 'admin.stageNew',
@@ -293,7 +293,7 @@ export function AdminDashboard() {
           <div className="mt-7 space-y-5">
             {[
               { time: '11:30', name: 'Farhan Ahmed', type: t('admin.visitGrove3A'), icon: Video },
-              { time: '14:00', name: 'Nusrat Jahan', type: t('admin.discoveryCall'), icon: Phone },
+              { time: '14:00', name: 'Imran Hossain', type: t('admin.discoveryCall'), icon: Phone },
               { time: '16:30', name: 'Maliha Karim', type: t('admin.visitSouthTerrace'), icon: UserRound },
             ].map((visit) => (
               <div key={visit.time} className="flex gap-3">
