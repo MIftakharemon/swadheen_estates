@@ -5,23 +5,10 @@ import { CircleUserRound, LayoutDashboard, LogOut, Shapes } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import { cn } from '@/lib/utils'
+import { cn, initialsOf } from '@/lib/utils'
 import { useLocale } from '@/i18n/locale-provider'
 
 const STAFF_ROLES = ['SUPER_ADMIN', 'MANAGER', 'SALES_AGENT', 'CONTENT_EDITOR']
-
-function initialsOf(name: string | null | undefined, email: string | null | undefined) {
-  const source = (name ?? email ?? '?').trim()
-  return (
-    source
-      .split(/\s+/)
-      .map((word) => word[0])
-      .filter(Boolean)
-      .slice(0, 2)
-      .join('')
-      .toUpperCase() || '?'
-  )
-}
 
 // The header's account entry: anonymous visitors get sign-in / create-account
 // links, signed-in users get their space, admin panel (staff) and sign out.

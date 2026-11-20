@@ -16,12 +16,20 @@ declare module '@prisma/client' {
     create(args: unknown): Promise<SavedPropertyRecord>
     delete(args: unknown): Promise<SavedPropertyRecord>
   }
+  type UserRecord = {
+    id: string
+    name: string
+    email: string
+    role: string
+    createdAt: Date
+  }
   type UserDelegate = {
-    create(args: unknown): Promise<SeedRecord>
+    create(args: unknown): Promise<UserRecord>
     upsert(args: unknown): Promise<SeedRecord>
     findUnique(
       args: unknown,
     ): Promise<{ id: string; name: string; email: string; role: string; passwordHash: string | null } | null>
+    findMany(args: unknown): Promise<UserRecord[]>
   }
   type ProjectRecord = { id: string; name: string; slug: string }
   type ProjectDelegate = {

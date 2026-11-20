@@ -12,15 +12,24 @@ import {
   Search,
   ShieldCheck,
 } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 import { properties } from '@/data/properties'
 import { PropertyCard } from '@/components/property/property-card'
 import { Button, ButtonLink } from '@/components/ui/button'
 import { NotificationBell } from '@/components/ui/notification-bell'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useWishlist } from '@/features/wishlist/wishlist-provider'
 import { useLocale } from '@/i18n/locale-provider'
-import { cn } from '@/lib/utils'
+import { cn, initialsOf } from '@/lib/utils'
 
 export function PortalDashboard() {
   const { t } = useLocale()
+  const { data: session } = useSession()
+  const { ready, isSaved } = useWishlist()
+  const user = session?.user
+  // The signed-in member's own name — the dashboard is theirs, not a demo's.
+  const displayName = (user?.name ?? user?.email ?? '').trim().split(/\s+/)[0] || t('portal.mySpace')
+  const saved = properties.filter((property) => isSaved(property.slug))
   const timeline = [
     { label: t('portal.timeline1'), date: '02 Nov · 09:14', done: true },
     { label: t('portal.timeline2'), date: '02 Nov · 10:02', done: true },
@@ -37,7 +46,7 @@ export function PortalDashboard() {
           <div className="flex items-center gap-3">
             <NotificationBell scope="user" tone="stone" />
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-terracotta text-[10px] font-extrabold text-white">
-              NJ
+              {initialsOf(user?.name, user?.email)}
             </span>
           </div>
         </div>
@@ -49,7 +58,7 @@ export function PortalDashboard() {
             <h1 className="display-type mt-3 text-5xl leading-[.9]">
               {t('portal.goodMorning')}
               <br />
-              <em className="font-normal text-terracotta">{t('portal.nusrat')}</em>
+              <em className="font-normal text-terracotta">{displayName}</em>
             </h1>
           </div>
           <ButtonLink href="/properties" variant="secondary">
@@ -59,7 +68,7 @@ export function PortalDashboard() {
         <div className="mt-10 grid gap-4 sm:grid-cols-3">
           <div className="rounded-panel border border-line bg-paper p-5 shadow-soft">
             <Heart className="h-5 w-5 text-terracotta" />
-            <p className="mt-5 text-2xl font-extrabold">04</p>
+            <p className="mt-5 text-2xl font-extrabold">{ready ? saved.length : '—'}</p>
             <p className="mt-1 text-xs text-ink/50">{t('savedProperties')}</p>
           </div>
           <div className="rounded-panel border border-line bg-paper p-5 shadow-soft">
@@ -170,20 +179,36 @@ export function PortalDashboard() {
           </aside>
         </div>
         <section className="mt-12">
-          <div className="flex items-end justify-between">
-            <div>
-              <p className="eyebrow">{t('portal.savedForLater')}</p>
-              <h2 className="display-type mt-3 text-4xl">{t('portal.shortlist')}</h2>
+          <div>
+            <p className="eyebrow">{t('portal.savedForLater')}</p>
+            <h2 className="display-type mt-3 text-4xl">{t('portal.shortlist')}</h2>
+          </div>
+          {!ready ? (
+            <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 3 }, (_, index) => (
+                <div key={index} className="space-y-4">
+                  <Skeleton className="aspect-[4/3] w-full rounded-panel" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                </div>
+              ))}
             </div>
-            <Link href="/portal/saved" className="text-xs font-bold text-terracotta">
-              {t('viewAll')} <ArrowUpRight className="ml-1 inline h-3.5 w-3.5" />
-            </Link>
-          </div>
-          <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {properties.slice(0, 3).map((property) => (
-              <PropertyCard key={property.id} property={property} />
-            ))}
-          </div>
+          ) : saved.length === 0 ? (
+            <div className="mt-8 rounded-panel border border-dashed border-line bg-paper px-6 py-12 text-center">
+              <Heart className="mx-auto h-6 w-6 text-terracotta/60" />
+              <p className="mt-4 text-sm font-bold">{t('portal.noSavedTitle')}</p>
+              <p className="mt-2 text-xs leading-5 text-ink/55">{t('portal.noSavedBody')}</p>
+              <ButtonLink href="/properties" variant="secondary" size="sm" className="mt-5">
+                {t('portal.exploreMore')} <ArrowUpRight className="h-3.5 w-3.5" />
+              </ButtonLink>
+            </div>
+          ) : (
+            <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {saved.map((property) => (
+                <PropertyCard key={property.id} property={property} />
+              ))}
+            </div>
+          )}
         </section>
       </main>
     </div>

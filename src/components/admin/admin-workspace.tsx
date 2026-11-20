@@ -254,6 +254,15 @@ type ViewingRequest = {
   createdAt: string
 }
 
+// A fresh account created through the public sign-up form.
+type Registration = {
+  id: string
+  name: string
+  email: string
+  role: string
+  createdAt: string
+}
+
 function initialsOf(name: string) {
   return name
     .split(/\s+/)
@@ -268,6 +277,8 @@ export function AdminLeadsPage() {
   const { t, locale } = useLocale()
   const [requests, setRequests] = useState<ViewingRequest[]>([])
   const [requestsLoaded, setRequestsLoaded] = useState(false)
+  const [registrations, setRegistrations] = useState<Registration[]>([])
+  const [registrationsLoaded, setRegistrationsLoaded] = useState(false)
 
   useEffect(() => {
     let active = true
@@ -281,6 +292,24 @@ export function AdminLeadsPage() {
       })
       .finally(() => {
         if (active) setRequestsLoaded(true)
+      })
+    return () => {
+      active = false
+    }
+  }, [])
+
+  useEffect(() => {
+    let active = true
+    fetch('/api/registrations')
+      .then((response) => (response.ok ? response.json() : { registrations: [] }))
+      .then((data: { registrations?: Registration[] }) => {
+        if (active) setRegistrations(data.registrations ?? [])
+      })
+      .catch(() => {
+        if (active) setRegistrations([])
+      })
+      .finally(() => {
+        if (active) setRegistrationsLoaded(true)
       })
     return () => {
       active = false
@@ -359,6 +388,48 @@ export function AdminLeadsPage() {
                 <p className="mt-3 flex items-center gap-1.5 border-t border-line pt-3 text-[10px] font-bold uppercase tracking-[.1em] text-ink/45">
                   <Clock3 className="h-3 w-3 shrink-0" />
                   {t('admin.requestedAt')}: {formatDateTime(request.createdAt, locale)}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+      <section className="mt-8 rounded-panel border border-line bg-paper p-5 shadow-soft sm:p-6">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="eyebrow">{t('admin.newAccounts')}</p>
+            <h2 className="display-type mt-2 text-3xl">{t('admin.newAccounts')}</h2>
+            <p className="mt-2 text-sm text-ink/55">{t('admin.newAccountsHint')}</p>
+          </div>
+          <span className="rounded-full bg-moss/15 px-3 py-1.5 text-[10px] font-extrabold text-ink/70">
+            {registrations.length}
+          </span>
+        </div>
+        {registrations.length === 0 ? (
+          <p className="mt-6 rounded-xl border border-dashed border-line px-4 py-8 text-center text-xs font-semibold text-ink/45">
+            {registrationsLoaded ? t('admin.noAccounts') : t('notif.loading')}
+          </p>
+        ) : (
+          <ul className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {registrations.map((registration) => (
+              <li
+                key={registration.id}
+                className="rounded-xl border border-line bg-stone/50 p-4 transition hover:shadow-soft"
+              >
+                <div className="flex items-start gap-3">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-moss/30 text-[10px] font-extrabold text-ink">
+                    {initialsOf(registration.name)}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-bold">{registration.name}</p>
+                    <p className="mt-0.5 truncate text-[11px] font-semibold text-ink/55">
+                      {registration.email}
+                    </p>
+                  </div>
+                </div>
+                <p className="mt-3 flex items-center gap-1.5 border-t border-line pt-3 text-[10px] font-bold uppercase tracking-[.1em] text-ink/45">
+                  <Clock3 className="h-3 w-3 shrink-0" />
+                  {t('admin.joinedAt')}: {formatDateTime(registration.createdAt, locale)}
                 </p>
               </li>
             ))}

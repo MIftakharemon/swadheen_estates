@@ -42,9 +42,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'An account with this email already exists.' }, { status: 409 })
 
     const passwordHash = await argon2.hash(parsed.data.password)
-    await db.user.create({
+    const user = await db.user.create({
       data: { name: parsed.data.name, email, passwordHash, role: 'CUSTOMER' },
     })
+    // Best-effort: ping the admin panel so new sign-ups are visible there.
+    try {
+      await db.notification.create({
+        data: {
+          audience: 'ADMIN',
+          type: 'NEW_ACCOUNT',
+          title: user.name,
+          body: user.email,
+          link: '/admin/leads',
+        },
+      })
+    } catch (notificationError) {
+      console.error(
+        'register_notification_failed',
+        notificationError instanceof Error ? notificationError.message : 'unknown error',
+      )
+    }
     return NextResponse.json({ ok: true }, { status: 201 })
   } catch (error) {
     // Unique-constraint race: two submissions with the same email at once.

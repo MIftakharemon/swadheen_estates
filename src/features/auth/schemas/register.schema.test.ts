@@ -23,14 +23,24 @@ describe('register schema', () => {
     expect(result.success).toBe(false)
   })
 
-  it('rejects passwords shorter than the credentials provider minimum', () => {
+  it('rejects passwords shorter than the eight-character floor', () => {
     const result = registerSchema.safeParse({
       name: 'Nusrat Jahan',
       email: 'nusrat@example.com',
-      password: 'short',
-      confirmPassword: 'short',
+      password: '1234567',
+      confirmPassword: '1234567',
     })
     expect(result.success).toBe(false)
+  })
+
+  it('accepts a password of exactly eight characters', () => {
+    const result = registerSchema.safeParse({
+      name: 'Nusrat Jahan',
+      email: 'nusrat@example.com',
+      password: '12345678',
+      confirmPassword: '12345678',
+    })
+    expect(result.success).toBe(true)
   })
 
   it('rejects mismatched password confirmation', () => {

@@ -144,7 +144,11 @@ export function NotificationBell({
             {items.map((item) => {
               const meta = item.meta ?? {}
               const label =
-                item.type === 'VIEWING_REQUEST' ? t('notif.viewingRequest') : t('notifications')
+                item.type === 'VIEWING_REQUEST'
+                  ? t('notif.viewingRequest')
+                  : item.type === 'NEW_ACCOUNT'
+                    ? t('notif.newAccount')
+                    : t('notifications')
               const detail = [item.body, meta.property].find(Boolean) ?? null
               const contact = [meta.phone, meta.email].filter(Boolean).join(' · ') || null
               const content = (
