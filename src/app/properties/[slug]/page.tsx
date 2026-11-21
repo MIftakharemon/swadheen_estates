@@ -1,22 +1,33 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { getPropertyBySlug, properties } from '@/data/properties'
+import { properties as staticProperties, getPropertyBySlug } from '@/data/properties'
 import { PropertyDetailPage } from '@/components/property/property-detail'
+import {
+  getPublishedProperties,
+  resolvePublicProperty,
+} from '@/features/listings/services/public-listings'
 
 export function generateStaticParams() {
-  return properties.map((property) => ({ slug: property.slug }))
+  return staticProperties.map((property) => ({ slug: property.slug }))
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const property = getPropertyBySlug(slug)
+  const property = (await resolvePublicProperty(slug)) ?? getPropertyBySlug(slug)
   if (!property) return { title: 'Property not found' }
   return { title: property.title, description: property.summary, openGraph: { images: [property.image] } }
 }
 
+// Refresh every minute so admin edits and new listings appear without a redeploy.
+export const revalidate = 60
+
 export default async function PropertyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const property = getPropertyBySlug(slug)
+  // The database decides: published → render, draft/deleted → 404, no database
+  // → static catalogue.
+  const property = await resolvePublicProperty(slug)
   if (!property) notFound()
-  return <PropertyDetailPage property={property} />
+  const catalogue = (await getPublishedProperties()) ?? staticProperties
+  const related = catalogue.filter((item) => item.slug !== property.slug)
+  return <PropertyDetailPage property={property} related={related} />
 }

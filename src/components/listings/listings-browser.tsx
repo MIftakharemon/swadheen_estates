@@ -4,12 +4,12 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDown, Filter, Grid2X2, List, Map, MapPin, Search, SlidersHorizontal, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { properties } from '@/data/properties'
+import { properties as staticProperties, propertyTypes } from '@/data/properties'
 import { PropertyCard } from '@/components/property/property-card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { PropertyGridSkeleton } from '@/components/ui/skeleton'
-import type { PropertyType } from '@/types/property'
+import type { Property, PropertyType } from '@/types/property'
 import { useLocale } from '@/i18n/locale-provider'
 import { localizedText } from '@/i18n/localize'
 import { cn } from '@/lib/utils'
@@ -64,7 +64,9 @@ function MapPanel({ count }: { count: number }) {
   )
 }
 
-export function ListingsBrowser() {
+// `properties` arrives from the server page (DB-backed catalogue with a static
+// fallback) so admin additions and edits show up without a rebuild.
+export function ListingsBrowser({ properties = staticProperties }: { properties?: Property[] }) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -108,7 +110,7 @@ export function ListingsBrowser() {
           ? b.price - a.price
           : Number(b.featured) - Number(a.featured),
     )
-  }, [beds, budget, minArea, locale, query, sort, type])
+  }, [beds, budget, minArea, locale, properties, query, sort, type])
 
   function updateFilter(nextType: string) {
     setType(nextType)

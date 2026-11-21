@@ -14,6 +14,8 @@ import { RequestForm } from '@/components/content/request-form'
 import { PropertyCard } from '@/components/property/property-card'
 import { properties } from '@/data/properties'
 import { ProjectGallery } from '@/components/project/project-gallery'
+import type { Property } from '@/types/property'
+import type { Project } from '@/types/project'
 
 const team = [
   {
@@ -297,9 +299,16 @@ export function JournalPage() {
   )
 }
 
-export function ProjectsPage({ slug }: { slug: string }) {
+// `properties` comes from the server page — the live catalogue filtered for
+// this project (static catalogue as the no-database fallback).
+export function ProjectsPage({
+  slug,
+  properties: projectProperties,
+}: {
+  slug: string
+  properties: Property[]
+}) {
   const { t } = useLocale()
-  const projectProperties = properties.filter((property) => property.projectSlug === slug)
   const stages = [
     { statusKey: 'project.statusComplete', labelKey: 'project.stage1', date: t('project.dateJan2025') },
     { statusKey: 'project.statusComplete', labelKey: 'project.stage2', date: t('project.dateJun2025') },
@@ -413,6 +422,162 @@ export function ProjectsPage({ slug }: { slug: string }) {
                 {t('project.ctaTitle1')}
                 <br />
                 <em className="font-normal text-gold">{t('project.ctaTitle2')}</em>
+              </h2>
+              <ButtonLink href="/request" variant="dark">
+                {t('arrangeViewing')} <ArrowUpRight className="h-4 w-4" />
+              </ButtonLink>
+            </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  )
+}
+
+// Public Projects index — every project the admin publishes (DB-backed, with
+// the static catalogue as the no-database fallback).
+export function ProjectsIndex({ projects }: { projects: Project[] }) {
+  const { t } = useLocale()
+  return (
+    <div className="min-h-screen">
+      <Header />
+      <main>
+        <section className="border-b border-line bg-paper">
+          <div className="container-shell py-16 sm:py-24">
+            <p className="eyebrow">{t('projectsIndex.eyebrow')}</p>
+            <h1 className="display-type mt-4 text-5xl sm:text-7xl">{t('projects')}</h1>
+            <p className="mt-5 max-w-xl text-sm leading-7 text-ink/60">{t('projectsIndex.description')}</p>
+          </div>
+        </section>
+        <section className="container-shell section-space">
+          {projects.length === 0 ? (
+            <p className="rounded-xl border border-dashed border-line px-4 py-12 text-center text-sm font-semibold text-ink/45">
+              {t('projectsIndex.empty')}
+            </p>
+          ) : (
+            <div className="grid gap-8 sm:grid-cols-2">
+              {projects.map((project) => (
+                <Link
+                  key={project.id}
+                  href={`/projects/${project.slug}`}
+                  className="group overflow-hidden rounded-panel border border-line bg-paper shadow-soft transition hover:-translate-y-1 hover:shadow-float"
+                >
+                  <div className="image-frame relative aspect-[16/10]">
+                    {project.coverImage ? (
+                      <Image
+                        src={project.coverImage}
+                        alt=""
+                        fill
+                        sizes="(max-width: 640px) 100vw, 50vw"
+                        className="object-cover transition duration-500 group-hover:scale-105"
+                      />
+                    ) : null}
+                  </div>
+                  <div className="p-6">
+                    <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[.14em] text-terracotta">
+                      <MapPin className="h-3 w-3 shrink-0" /> {project.location}
+                    </p>
+                    <h2 className="display-type mt-3 text-3xl">{project.name}</h2>
+                    <p className="mt-3 line-clamp-2 text-sm leading-6 text-ink/55">{project.description}</p>
+                    <div className="mt-5 flex items-center justify-between border-t border-line pt-4 text-xs font-bold">
+                      <span className="text-ink/50">
+                        {project.totalUnits > 0
+                          ? t('projectsIndex.units', { n: project.totalUnits })
+                          : t('projectsIndex.listingsCount', { n: project.propertyCount ?? 0 })}
+                      </span>
+                      <span className="flex items-center gap-1 text-terracotta">
+                        {t('projectsIndex.viewProject')}{' '}
+                        <ArrowUpRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+      </main>
+      <Footer />
+    </div>
+  )
+}
+
+// Detail page for admin-created projects — brand-level sections driven by the
+// DB row (The Grove keeps its curated page instead).
+export function DbProjectPage({
+  project,
+  properties: projectProperties,
+}: {
+  project: Project
+  properties: Property[]
+}) {
+  const { t } = useLocale()
+  const deliveredYear = project.deliveredAt ? new Date(project.deliveredAt).getFullYear() : null
+  return (
+    <div className="min-h-screen">
+      <Header />
+      <main>
+        <section className="relative min-h-[560px] overflow-hidden bg-moss text-white">
+          {project.coverImage ? (
+            <Image src={project.coverImage} alt="" fill sizes="100vw" className="object-cover" />
+          ) : null}
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/45 to-ink/20" />
+          <div className="container-shell relative flex min-h-[560px] items-end pb-16">
+            <div>
+              <p className="eyebrow text-gold">{t('projectsIndex.eyebrow')}</p>
+              <h1 className="display-type mt-5 max-w-3xl text-[clamp(2.75rem,11vw,5.5rem)] leading-[.85]">
+                {project.name}
+              </h1>
+              <p className="mt-5 flex items-center gap-2 text-sm text-white/70">
+                <MapPin className="h-4 w-4 shrink-0" /> {project.location}
+              </p>
+              <p className="mt-4 max-w-md text-sm leading-7 text-white/65">{project.description}</p>
+            </div>
+          </div>
+        </section>
+        <section className="border-b border-line bg-paper">
+          <div className="container-shell grid gap-4 py-10 sm:grid-cols-3">
+            <div className="rounded-panel bg-stone p-6">
+              <p className="numeric text-4xl font-extrabold">{project.totalUnits}</p>
+              <p className="mt-2 text-xs text-ink/50">{t('project.statResidences')}</p>
+            </div>
+            <div className="rounded-panel bg-stone p-6">
+              <p className="numeric text-4xl font-extrabold">{projectProperties.length}</p>
+              <p className="mt-2 text-xs text-ink/50">{t('project.statListings')}</p>
+            </div>
+            <div className="rounded-panel bg-stone p-6">
+              <p className="text-4xl font-extrabold">
+                {deliveredYear ? <span className="numeric">{deliveredYear}</span> : t('project.statusInProgress')}
+              </p>
+              <p className="mt-2 text-xs text-ink/50">{t('project.statCompletion')}</p>
+            </div>
+          </div>
+        </section>
+        <section className="container-shell section-space">
+          <SectionHeading
+            eyebrow={t('project.availableEyebrow')}
+            title={t('project.availableListingsTitle')}
+            description={t('projectsIndex.description')}
+          />
+          {projectProperties.length === 0 ? (
+            <p className="mt-10 rounded-xl border border-dashed border-line px-4 py-10 text-center text-sm font-semibold text-ink/45">
+              {t('project.noListings')}
+            </p>
+          ) : (
+            <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {projectProperties.map((property) => (
+                <PropertyCard key={property.id} property={property} />
+              ))}
+            </div>
+          )}
+        </section>
+        <section className="container-shell pb-24">
+          <div className="rounded-panel bg-moss p-8 text-paper sm:p-14">
+            <p className="eyebrow text-gold">{t('project.ctaEyebrow')}</p>
+            <div className="mt-5 flex flex-col justify-between gap-8 md:flex-row md:items-end">
+              <h2 className="display-type max-w-2xl text-[clamp(2.5rem,9vw,4rem)] leading-[.9] sm:text-7xl">
+                {t('project.genericCtaTitle')}
               </h2>
               <ButtonLink href="/request" variant="dark">
                 {t('arrangeViewing')} <ArrowUpRight className="h-4 w-4" />

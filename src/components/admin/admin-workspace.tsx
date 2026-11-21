@@ -18,12 +18,15 @@ import {
   MoreHorizontal,
   Plus,
   Search,
+  Building2,
+  Pencil,
   Settings2,
+  Trash2,
   UploadCloud,
   Users,
   X,
 } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { properties } from '@/data/properties'
 import { Button, ButtonLink } from '@/components/ui/button'
 import { Badge, StatusBadge } from '@/components/ui/badge'
@@ -31,8 +34,10 @@ import { useLocale } from '@/i18n/locale-provider'
 import { localizedText } from '@/i18n/localize'
 import { cn } from '@/lib/utils'
 import { formatDateTime, formatPrice } from '@/lib/format'
+import { ListingDialog, type ListingKind } from '@/components/admin/listing-dialog'
 import { MediaDropzone } from '@/components/admin/media-dropzone'
 import { AdminProjectVideoManager } from '@/components/admin/project-video-manager'
+import type { AdminProjectDto, AdminPropertyDto } from '@/features/listings/types'
 
 const leads = [
   {
@@ -105,31 +110,131 @@ const stageColors: Record<string, string> = {
 
 export function AdminPropertiesPage() {
   const { t, locale } = useLocale()
+  const [propertyRows, setPropertyRows] = useState<AdminPropertyDto[]>([])
+  const [projectRows, setProjectRows] = useState<AdminProjectDto[]>([])
+  const [loaded, setLoaded] = useState(false)
+  const [loadFailed, setLoadFailed] = useState(false)
+  const [tab, setTab] = useState<ListingKind>('PROPERTY')
   const [query, setQuery] = useState('')
-  const [selected, setSelected] = useState<string[]>([])
-  const filtered = properties.filter((property) =>
-    `${property.title} ${property.location}`.toLowerCase().includes(query.toLowerCase()),
+  const [dialog, setDialog] = useState<{
+    mode: 'create' | 'edit'
+    kind: ListingKind | null
+    property?: AdminPropertyDto
+    project?: AdminProjectDto
+  } | null>(null)
+
+  const load = useCallback(() => {
+    fetch('/api/admin/listings')
+      .then((response) => (response.ok ? response.json() : Promise.reject(new Error('load failed'))))
+      .then((data: { properties?: AdminPropertyDto[]; projects?: AdminProjectDto[] }) => {
+        setPropertyRows(data.properties ?? [])
+        setProjectRows(data.projects ?? [])
+        setLoadFailed(false)
+      })
+      .catch(() => setLoadFailed(true))
+      .finally(() => setLoaded(true))
+  }, [])
+
+  useEffect(() => {
+    load()
+  }, [load])
+
+  const lowerQuery = query.trim().toLowerCase()
+  const filteredProperties = propertyRows.filter((item) =>
+    `${item.title} ${item.location} ${item.slug}`.toLowerCase().includes(lowerQuery),
   )
-  const allSelected = selected.length === filtered.length && filtered.length > 0
+  const filteredProjects = projectRows.filter((item) =>
+    `${item.name} ${item.location} ${item.slug}`.toLowerCase().includes(lowerQuery),
+  )
+
+  const removeListing = async (kind: ListingKind, id: string) => {
+    if (!window.confirm(t('admin.confirmDeleteListing'))) return
+    try {
+      const response = await fetch(`/api/admin/listings/${id}?kind=${kind}`, { method: 'DELETE' })
+      if (!response.ok) throw new Error('delete failed')
+      load()
+    } catch {
+      window.alert(t('admin.deleteFailed'))
+    }
+  }
+
+  const exportCsv = () => {
+    const rows =
+      tab === 'PROPERTY'
+        ? [
+            ['Title', 'Slug', 'Type', 'Status', 'Price', 'Location', 'Updated'],
+            ...filteredProperties.map((item) => [
+              item.title,
+              item.slug,
+              item.type,
+              item.dbStatus,
+              String(item.price),
+              item.location,
+              item.updatedAt,
+            ]),
+          ]
+        : [
+            ['Name', 'Slug', 'Location', 'Units', 'Listings', 'Updated'],
+            ...filteredProjects.map((item) => [
+              item.name,
+              item.slug,
+              item.location,
+              String(item.totalUnits),
+              String(item.propertyCount ?? 0),
+              item.updatedAt,
+            ]),
+          ]
+    const csv = rows
+      .map((row) => row.map((cell) => `"${(cell ?? '').replace(/"/g, '""')}"`).join(','))
+      .join('\n')
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }))
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = tab === 'PROPERTY' ? 'properties.csv' : 'projects.csv'
+    anchor.click()
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <div className="mx-auto max-w-[1440px]">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <p className="eyebrow">{t('admin.inventory')}</p>
           <h1 className="display-type mt-3 text-5xl">{t('admin.propertyManagement')}</h1>
-          <p className="mt-3 text-sm text-ink/55">{t('admin.listingStats')}</p>
+          <p className="mt-3 text-sm text-ink/55">
+            {`${propertyRows.length} ${t('properties')} · ${projectRows.length} ${t('projects')}`}
+          </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            <ArrowDownToLine className="h-3.5 w-3.5" /> {t('admin.import')}
+          <Button variant="outline" size="sm" onClick={exportCsv}>
+            <Download className="h-3.5 w-3.5" /> {t('admin.exportCsv')}
           </Button>
-          <Button size="sm">
-            <Plus className="h-3.5 w-3.5" /> {t('admin.addProperty')}
+          <Button size="sm" onClick={() => setDialog({ mode: 'create', kind: null })}>
+            <Plus className="h-3.5 w-3.5" /> {t('admin.addListing')}
           </Button>
         </div>
       </div>
+
       <div className="mt-8 rounded-panel border border-line bg-paper shadow-soft">
         <div className="flex flex-col gap-3 border-b border-line p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex gap-2">
+            {(['PROPERTY', 'PROJECT'] as const).map((kind) => (
+              <button
+                key={kind}
+                type="button"
+                onClick={() => setTab(kind)}
+                className={cn(
+                  'rounded-full px-4 py-2 text-xs font-bold transition',
+                  tab === kind ? 'bg-ink text-paper' : 'text-ink/50 hover:bg-stone',
+                )}
+              >
+                {kind === 'PROPERTY' ? t('properties') : t('projects')}
+                <span className="ml-1.5 text-[10px] opacity-60">
+                  {kind === 'PROPERTY' ? propertyRows.length : projectRows.length}
+                </span>
+              </button>
+            ))}
+          </div>
           <label className="flex h-10 items-center gap-2 rounded-full border border-line bg-stone/50 px-3">
             <Search className="h-3.5 w-3.5 text-ink/35" />
             <input
@@ -139,111 +244,202 @@ export function AdminPropertiesPage() {
               className="w-full bg-transparent text-xs font-semibold outline-none placeholder:text-ink/35 sm:w-64"
             />
           </label>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="sm">
-              <Filter className="h-3.5 w-3.5" /> {t('filters')}
-            </Button>
-            <Button variant="outline" size="sm">
-              <Download className="h-3.5 w-3.5" /> {t('admin.exportCsv')}
-            </Button>
-          </div>
         </div>
-        {selected.length > 0 && (
-          <div className="flex items-center gap-3 border-b border-line bg-terracotta/5 px-4 py-3 text-xs font-bold">
-            <span>{`${selected.length} ${t('admin.selected')}`}</span>
-            <button type="button" className="text-terracotta">
-              {t('publish')}
-            </button>
-            <button type="button" className="text-danger">
-              {t('admin.archive')}
-            </button>
-            <button type="button" onClick={() => setSelected([])} className="ml-auto">
-              <X className="h-4 w-4" />
-            </button>
+
+        {!loaded ? (
+          <p className="px-5 py-10 text-center text-xs font-semibold text-ink/45">{t('notif.loading')}</p>
+        ) : loadFailed ? (
+          <p className="px-5 py-10 text-center text-xs font-bold text-danger">{t('admin.loadFailed')}</p>
+        ) : tab === 'PROPERTY' ? (
+          filteredProperties.length === 0 ? (
+            <p className="px-5 py-10 text-center text-xs font-semibold text-ink/45">
+              {t('admin.noListings')}
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[820px] text-left">
+                <thead className="bg-stone/60 text-[10px] font-bold uppercase tracking-[.13em] text-ink/40">
+                  <tr>
+                    <th className="px-5 py-3">{t('property')}</th>
+                    <th className="px-3 py-3">{t('admin.typeHeader')}</th>
+                    <th className="px-3 py-3">{t('statusLower')}</th>
+                    <th className="px-3 py-3">{t('price')}</th>
+                    <th className="px-3 py-3">{t('admin.updated')}</th>
+                    <th className="w-24 px-5 py-3" />
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-line">
+                  {filteredProperties.map((property) => (
+                    <tr key={property.id} className="group hover:bg-stone/40">
+                      <td className="px-5 py-3">
+                        <div className="flex items-center gap-3">
+                          {property.image ? (
+                            <div className="image-frame h-11 w-14 shrink-0 rounded-lg">
+                              <Image
+                                src={property.image}
+                                alt=""
+                                fill
+                                sizes="56px"
+                                className="object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <span className="flex h-11 w-14 shrink-0 items-center justify-center rounded-lg bg-stone text-ink/30">
+                              <Building2 className="h-4 w-4" />
+                            </span>
+                          )}
+                          <div>
+                            <p className="text-xs font-bold">
+                              {localizedText(property.title, property.titleBn, locale)}
+                            </p>
+                            <p className="mt-1 text-[10px] text-ink/40">
+                              {localizedText(property.location, property.locationBn, locale)}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-3 py-3">
+                        <span className="text-xs text-ink/60">
+                          {t(`type.${property.type.toLowerCase()}` as never)}
+                        </span>
+                      </td>
+                      <td className="px-3 py-3">
+                        <div className="flex items-center gap-2">
+                          <StatusBadge status={property.status} />
+                          {property.dbStatus !== 'PUBLISHED' ? (
+                            <span className="rounded-full bg-stone px-2 py-0.5 text-[9px] font-bold text-ink/50">
+                              {t('admin.form.draft')}
+                            </span>
+                          ) : null}
+                        </div>
+                      </td>
+                      <td className="px-3 py-3 text-xs font-extrabold numeric">
+                        {formatPrice(property.price)}
+                      </td>
+                      <td className="px-3 py-3 text-xs text-ink/45">
+                        {formatDateTime(property.updatedAt, locale)}
+                      </td>
+                      <td className="px-5 py-3">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            type="button"
+                            onClick={() => setDialog({ mode: 'edit', kind: 'PROPERTY', property })}
+                            className="flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-stone"
+                            aria-label={`${t('admin.editProperty')} — ${property.title}`}
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => removeListing('PROPERTY', property.id)}
+                            className="flex h-8 w-8 items-center justify-center rounded-full text-danger transition hover:bg-danger/10"
+                            aria-label={`${t('admin.removeListing')} — ${property.title}`}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )
+        ) : filteredProjects.length === 0 ? (
+          <p className="px-5 py-10 text-center text-xs font-semibold text-ink/45">
+            {t('admin.noListings')}
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[780px] text-left">
+              <thead className="bg-stone/60 text-[10px] font-bold uppercase tracking-[.13em] text-ink/40">
+                <tr>
+                  <th className="px-5 py-3">{t('admin.form.projectName')}</th>
+                  <th className="px-3 py-3">{t('admin.form.locationEn')}</th>
+                  <th className="px-3 py-3">{t('admin.units')}</th>
+                  <th className="px-3 py-3">{t('properties')}</th>
+                  <th className="px-3 py-3">{t('admin.updated')}</th>
+                  <th className="w-24 px-5 py-3" />
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-line">
+                {filteredProjects.map((project) => (
+                  <tr key={project.id} className="group hover:bg-stone/40">
+                    <td className="px-5 py-3">
+                      <div className="flex items-center gap-3">
+                        {project.coverImage ? (
+                          <div className="image-frame h-11 w-14 shrink-0 rounded-lg">
+                            <Image
+                              src={project.coverImage}
+                              alt=""
+                              fill
+                              sizes="56px"
+                              className="object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <span className="flex h-11 w-14 shrink-0 items-center justify-center rounded-lg bg-stone text-ink/30">
+                            <Building2 className="h-4 w-4" />
+                          </span>
+                        )}
+                        <div>
+                          <p className="text-xs font-bold">{project.name}</p>
+                          <p className="mt-1 text-[10px] text-ink/40">/projects/{project.slug}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-3 py-3 text-xs text-ink/60">{project.location}</td>
+                    <td className="px-3 py-3 text-xs font-bold numeric">{project.totalUnits}</td>
+                    <td className="px-3 py-3 text-xs font-bold numeric">{project.propertyCount ?? 0}</td>
+                    <td className="px-3 py-3 text-xs text-ink/45">
+                      {project.updatedAt ? formatDateTime(project.updatedAt, locale) : ''}
+                    </td>
+                    <td className="px-5 py-3">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setDialog({ mode: 'edit', kind: 'PROJECT', project })}
+                          className="flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-stone"
+                          aria-label={`${t('admin.editProject')} — ${project.name}`}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeListing('PROJECT', project.id)}
+                          className="flex h-8 w-8 items-center justify-center rounded-full text-danger transition hover:bg-danger/10"
+                          aria-label={`${t('admin.removeListing')} — ${project.name}`}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[760px] text-left">
-            <thead className="bg-stone/60 text-[10px] font-bold uppercase tracking-[.13em] text-ink/40">
-              <tr>
-                <th className="w-12 px-5 py-3">
-                  <input
-                    type="checkbox"
-                    checked={allSelected}
-                    onChange={() => setSelected(allSelected ? [] : filtered.map((item) => item.id))}
-                    aria-label={t('admin.selectAllProperties')}
-                  />
-                </th>
-                <th className="px-3 py-3">{t('property')}</th>
-                <th className="px-3 py-3">{t('admin.typeHeader')}</th>
-                <th className="px-3 py-3">{t('statusLower')}</th>
-                <th className="px-3 py-3">{t('price')}</th>
-                <th className="px-3 py-3">{t('admin.updated')}</th>
-                <th className="w-12 px-5 py-3" />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-line">
-              {filtered.map((property) => (
-                <tr key={property.id} className="group hover:bg-stone/40">
-                  <td className="px-5 py-3">
-                    <input
-                      type="checkbox"
-                      checked={selected.includes(property.id)}
-                      onChange={() =>
-                        setSelected((current) =>
-                          current.includes(property.id)
-                            ? current.filter((id) => id !== property.id)
-                            : [...current, property.id],
-                        )
-                      }
-                      aria-label={`${t('admin.select')} ${localizedText(property.title, property.titleBn, locale)}`}
-                    />
-                  </td>
-                  <td className="px-3 py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="image-frame h-11 w-14 shrink-0 rounded-lg">
-                        <Image src={property.image} alt="" fill sizes="56px" className="object-cover" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold">
-                          {localizedText(property.title, property.titleBn, locale)}
-                        </p>
-                        <p className="mt-1 text-[10px] text-ink/40">
-                          {localizedText(property.location, property.locationBn, locale)}
-                        </p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-3 py-3">
-                    <span className="text-xs text-ink/60">
-                      {t(`type.${property.type.toLowerCase()}` as never)}
-                    </span>
-                  </td>
-                  <td className="px-3 py-3">
-                    <StatusBadge status={property.status} />
-                  </td>
-                  <td className="px-3 py-3 text-xs font-extrabold numeric">{formatPrice(property.price)}</td>
-                  <td className="px-3 py-3 text-xs text-ink/45">02 Nov 2026</td>
-                  <td className="px-5 py-3">
-                    <button
-                      type="button"
-                      className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-stone"
-                      aria-label={`${t('admin.moreActionsFor')} ${localizedText(property.title, property.titleBn, locale)}`}
-                    >
-                      <MoreHorizontal className="h-4 w-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
       </div>
+
+      {dialog ? (
+        <ListingDialog
+          kind={dialog.kind}
+          mode={dialog.mode}
+          property={dialog.property ?? null}
+          project={dialog.project ?? null}
+          projects={projectRows}
+          onClose={() => setDialog(null)}
+          onSaved={() => {
+            setDialog(null)
+            load()
+          }}
+        />
+      ) : null}
     </div>
   )
 }
 
-// A real private-viewing request that came in through the public site.
 type ViewingRequest = {
   id: string
   name: string

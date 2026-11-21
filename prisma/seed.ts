@@ -1,5 +1,7 @@
-import { PrismaClient, PropertyType, PropertyStatus, InventoryStatus } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import argon2 from 'argon2'
+import { properties as catalogue } from '../src/data/properties'
+import { buildPropertyWriteData } from '../src/features/listings/services/property-persistence'
 
 const prisma = new PrismaClient()
 
@@ -9,6 +11,27 @@ const seedImages = [
   'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=85',
   'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1600&q=85',
 ]
+
+// The static catalogue in src/data/properties.ts is the canonical copy of the
+// public listings; this sync mirrors every entry into the Property table
+// (slug-keyed, full overwrite) so the DB-backed pages render the same set.
+// Admin edits made later are preserved until the next seed run.
+async function syncCatalogue() {
+  for (const [index, property] of catalogue.entries()) {
+    const projectSlug = property.projectSlug?.trim()
+    const project = projectSlug
+      ? await prisma.project.findUnique({ where: { slug: projectSlug }, select: { id: true } })
+      : null
+    const { projectSlug: _projectSlug, ...data } = buildPropertyWriteData(property, {
+      sortOrder: index,
+    })
+    await prisma.property.upsert({
+      where: { slug: property.slug },
+      update: data,
+      create: { ...data, projectId: project?.id ?? null },
+    })
+  }
+}
 
 async function main() {
   const manager = await prisma.user.upsert({
@@ -77,54 +100,25 @@ async function main() {
     })
   }
 
-  const types = [PropertyType.FLAT, PropertyType.HOUSE, PropertyType.LAND]
-  for (let index = 0; index < 20; index += 1) {
-    const type = types[index % types.length] ?? PropertyType.FLAT
-    await prisma.property.upsert({
-      where: { slug: `swadheen-demo-${index + 1}` },
-      update: {},
-      create: {
-        slug: `swadheen-demo-${index + 1}`,
-        title: `${type === 'LAND' ? 'Corner plot' : type === 'HOUSE' ? 'Courtyard residence' : 'Light-filled apartment'} ${String(index + 1).padStart(2, '0')}`,
-        type,
-        status: PropertyStatus.PUBLISHED,
-        inventory: index % 7 === 0 ? InventoryStatus.BOOKED : InventoryStatus.AVAILABLE,
-        location: index % 2 === 0 ? 'Bashundhara R/A, Dhaka' : 'Uttara, Dhaka',
-        city: 'Dhaka',
-        description:
-          'A considered home with generous daylight, durable materials and a calm relationship to its surroundings.',
-        priceMinor: BigInt(12000000 + index * 1750000),
-        area: 980 + index * 80,
-        bedrooms: type === 'LAND' ? null : 2 + (index % 3),
-        bathrooms: type === 'LAND' ? null : 2 + (index % 2),
-        floor: type === 'FLAT' ? 2 + (index % 8) : null,
-        featured: index < 6,
-        verified: true,
-        projectId: type === 'FLAT' ? project.id : null,
-        publishedAt: new Date(),
-        media: {
-          create: {
-            type: 'IMAGE',
-            url: seedImages[index % seedImages.length] ?? seedImages[0],
-            altText: 'Swadheen Estates property',
-          },
+  await syncCatalogue()
+
+  const existingLead = await prisma.lead.findFirst({ where: { email: 'nusrat@example.com' } })
+  if (!existingLead) {
+    await prisma.lead.create({
+      data: {
+        name: 'Nusrat Jahan',
+        email: 'nusrat@example.com',
+        phone: '+880 1712 345678',
+        note: 'Looking for a three-bedroom home near Gulshan.',
+        source: 'WEBSITE',
+        score: 78,
+        assignedTo: manager.id,
+        activities: {
+          create: { kind: 'NOTE', body: 'First enquiry received through the website.' },
         },
       },
     })
   }
-
-  await prisma.lead.create({
-    data: {
-      name: 'Nusrat Jahan',
-      email: 'nusrat@example.com',
-      phone: '+880 1712 345678',
-      note: 'Looking for a three-bedroom home near Gulshan.',
-      source: 'WEBSITE',
-      score: 78,
-      assignedTo: manager.id,
-      activities: { create: { kind: 'NOTE', body: 'First enquiry received through the website.' } },
-    },
-  })
 }
 
 main().finally(() => prisma.$disconnect())

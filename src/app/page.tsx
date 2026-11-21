@@ -1,8 +1,14 @@
 import { HomePage } from '@/components/home/home-page'
 import { JsonLd } from '@/components/seo/json-ld'
+import { properties as staticProperties } from '@/data/properties'
+import { getPublishedProperties } from '@/features/listings/services/public-listings'
 import { env } from '@/lib/env'
 
-export default function Page() {
+// Refresh every minute so featured listings follow the admin panel.
+export const revalidate = 60
+
+export default async function Page() {
+  const listings = (await getPublishedProperties()) ?? staticProperties
   return (
     <>
       <JsonLd
@@ -14,7 +20,7 @@ export default function Page() {
           description: 'Thoughtfully selected land, houses and apartments across Dhaka.',
         }}
       />
-      <HomePage />
+      <HomePage properties={listings} />
     </>
   )
 }

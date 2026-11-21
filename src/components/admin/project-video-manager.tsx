@@ -227,8 +227,8 @@ export function AdminProjectVideoManager({ projectSlug }: { projectSlug?: string
           <h1 className="display-type mt-3 text-5xl">{t('videos.title')}</h1>
           <p className="mt-3 max-w-xl text-sm leading-6 text-ink/55">{t('videos.copy')}</p>
         </div>
-        <ButtonLink href="/admin/media" variant="outline" size="sm">
-          {t('videos.backToMedia')} <ExternalLink className="h-3.5 w-3.5" />
+        <ButtonLink href="/admin" variant="outline" size="sm">
+          {t('admin.overview')} <ExternalLink className="h-3.5 w-3.5" />
         </ButtonLink>
       </div>
       <div className="mt-8 grid gap-6 xl:grid-cols-[.72fr_1.28fr]">

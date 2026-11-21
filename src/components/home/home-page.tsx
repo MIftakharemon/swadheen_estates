@@ -14,7 +14,7 @@ import {
   Waves,
 } from 'lucide-react'
 import { useRef, useState } from 'react'
-import { properties, propertyTypes } from '@/data/properties'
+import { properties as staticProperties, propertyTypes } from '@/data/properties'
 import { Button, ButtonLink } from '@/components/ui/button'
 import { FeaturedCard } from '@/components/property/featured-card'
 import { SectionHeading } from '@/components/ui/section-heading'
@@ -29,6 +29,7 @@ import { HomeTypewriter } from '@/components/home/home-typewriter'
 import { CinematicJourney } from '@/components/home/cinematic-journey'
 import { useCardAutoSlide } from '@/components/home/use-card-auto-slide'
 import { useLocale } from '@/i18n/locale-provider'
+import type { Property } from '@/types/property'
 
 const journalImages = [
   'https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=1000&q=85',
@@ -36,7 +37,9 @@ const journalImages = [
   'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1000&q=85',
 ]
 
-export function HomePage() {
+// `properties` is the live catalogue passed by the server page; the static
+// catalogue is the fallback when no database is configured.
+export function HomePage({ properties = staticProperties }: { properties?: Property[] }) {
   const { t, locale } = useLocale()
   const featuredAll = properties.filter((property) => property.featured)
   const featured = featuredAll.slice(0, 4)

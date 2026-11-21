@@ -141,6 +141,12 @@ model Property {
   verified    Boolean         @default(false)
   focalX      Int             @default(50)
   focalY      Int             @default(50)
+  // Web-parity display fields the relational columns do not cover: Bengali
+  // texts, image gallery, summary, amenities, badges, 3D/360/video flags,
+  // completion note and the project label/slug.
+  webFields   Json?
+  // Catalogue ordering shared by the public site and the admin panel.
+  sortOrder   Int             @default(0)
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
   publishedAt DateTime?

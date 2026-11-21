@@ -48,14 +48,22 @@ function Spec({ icon: Icon, label, value }: { icon: typeof BedDouble; label: str
   )
 }
 
-export function PropertyDetailPage({ property }: { property: Property }) {
+export function PropertyDetailPage({
+  property,
+  related,
+}: {
+  property: Property
+  related?: Property[]
+}) {
   const { locale, t } = useLocale()
   const { isSaved, toggleSaved } = useWishlist()
   const saved = isSaved(property.slug)
   const title = localizedText(property.title, property.titleBn, locale)
   const typeValue = t(`type.${property.type.toLowerCase()}` as 'type.land' | 'type.house' | 'type.flat')
-  const similar = properties
-    .filter((item) => item.id !== property.id && item.type === property.type)
+  // `related` comes from the server (live catalogue); the static catalogue is
+  // the no-database fallback. Matched by slug — DB ids differ from static ids.
+  const similar = (related ?? properties)
+    .filter((item) => item.slug !== property.slug && item.type === property.type)
     .slice(0, 3)
   return (
     <div className="min-h-screen">

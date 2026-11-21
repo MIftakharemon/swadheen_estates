@@ -16,6 +16,7 @@ import {
   Search,
   Settings2,
   Sun,
+  UserRound,
   Users,
   Video,
   X,
@@ -28,7 +29,16 @@ import { NotificationBell } from '@/components/ui/notification-bell'
 import { useTheme } from '@/components/providers/theme-provider'
 import { useLocale } from '@/i18n/locale-provider'
 
-const icons = { LayoutDashboard, Building2, Users, CalendarDays, Images, ChartNoAxesCombined, Video }
+const icons = {
+  LayoutDashboard,
+  Building2,
+  Users,
+  UserRound,
+  CalendarDays,
+  Images,
+  ChartNoAxesCombined,
+  Video,
+}
 
 // The sidebar highlight has to follow the section you are actually in, so a
 // section matches exactly, and nested routes (e.g. /admin/properties/x) match
@@ -41,9 +51,10 @@ function isSectionActive(href: string, pathname: string) {
 const adminLabels: Record<string, string> = {
   Overview: 'admin.overview',
   Properties: 'admin.properties',
+  Users: 'admin.users',
   Leads: 'admin.leads',
   Visits: 'admin.visits',
-  'Media library': 'admin.mediaLibrary',
+  // 'Media library': 'admin.mediaLibrary',
   'Project videos': 'admin.projectVideos',
   Reports: 'admin.reports',
 }

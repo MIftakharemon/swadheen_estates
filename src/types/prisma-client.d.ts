@@ -1,17 +1,55 @@
 declare module '@prisma/client' {
   type SeedRecord = { id: string }
+  export type PropertyRecord = {
+    id: string
+    slug: string
+    title: string
+    type: PropertyType
+    status: PropertyStatus
+    inventory: InventoryStatus
+    location: string
+    city: string
+    description: string
+    priceMinor: bigint
+    currency: string
+    area: unknown
+    areaUnit: string
+    bedrooms: number | null
+    bathrooms: number | null
+    floor: number | null
+    facing: string | null
+    featured: boolean
+    verified: boolean
+    focalX: number
+    focalY: number
+    webFields: unknown
+    sortOrder: number
+    createdAt: Date
+    updatedAt: Date
+    publishedAt: Date | null
+    projectId: string | null
+    project?: { name: string; slug: string } | null
+  }
   type PropertyDelegate = {
-    findUnique(args: unknown): Promise<{ id: string; title?: string } | null>
+    findUnique(args: unknown): Promise<PropertyRecord | null>
+    findMany(args: unknown): Promise<PropertyRecord[]>
+    create(args: unknown): Promise<PropertyRecord>
+    update(args: unknown): Promise<PropertyRecord>
+    updateMany(args: unknown): Promise<{ count: number }>
+    delete(args: unknown): Promise<PropertyRecord>
+    count(args?: unknown): Promise<number>
     upsert(args: unknown): Promise<SeedRecord>
   }
   type SavedPropertyRecord = {
     userId: string
     propertyId: string
     createdAt: Date
-    property?: { slug: string }
+    property?: PropertyRecord
   }
   type SavedPropertyDelegate = {
-    findMany(args: unknown): Promise<Array<{ property: { slug: string } }>>
+    findMany(
+      args: unknown,
+    ): Promise<Array<{ userId: string; propertyId: string; createdAt: Date; property: PropertyRecord }>>
     findUnique(args: unknown): Promise<SavedPropertyRecord | null>
     create(args: unknown): Promise<SavedPropertyRecord>
     delete(args: unknown): Promise<SavedPropertyRecord>
@@ -20,8 +58,11 @@ declare module '@prisma/client' {
     id: string
     name: string
     email: string
+    phone: string | null
     role: string
     createdAt: Date
+    updatedAt: Date
+    _count?: { savedListings?: number; createdLeads?: number; visits?: number }
   }
   type UserDelegate = {
     create(args: unknown): Promise<UserRecord>
@@ -30,11 +71,29 @@ declare module '@prisma/client' {
       args: unknown,
     ): Promise<{ id: string; name: string; email: string; role: string; passwordHash: string | null } | null>
     findMany(args: unknown): Promise<UserRecord[]>
+    count(args?: unknown): Promise<number>
   }
-  type ProjectRecord = { id: string; name: string; slug: string }
+  export type ProjectRecord = {
+    id: string
+    slug: string
+    name: string
+    location: string
+    description: string
+    coverImage: string
+    totalUnits: number
+    deliveredAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count?: { properties?: number }
+  }
   type ProjectDelegate = {
     upsert(args: unknown): Promise<SeedRecord>
     findUnique(args: unknown): Promise<ProjectRecord | null>
+    findMany(args: unknown): Promise<ProjectRecord[]>
+    create(args: unknown): Promise<ProjectRecord>
+    update(args: unknown): Promise<ProjectRecord>
+    delete(args: unknown): Promise<ProjectRecord>
+    count(args?: unknown): Promise<number>
   }
   type ProjectVideoRecord = {
     id: string
@@ -56,7 +115,7 @@ declare module '@prisma/client' {
     delete(args: unknown): Promise<ProjectVideoRecord>
     upsert(args: unknown): Promise<ProjectVideoRecord>
   }
-  type LeadRecord = {
+  export type LeadRecord = {
     id: string
     name: string
     email: string
@@ -64,12 +123,18 @@ declare module '@prisma/client' {
     note: string | null
     stage: string
     source: string
+    score: number
     createdAt: Date
+    updatedAt: Date
+    propertyId: string | null
     property?: { title: string; slug: string } | null
   }
   type LeadDelegate = {
     create(args: unknown): Promise<LeadRecord>
+    findFirst(args: unknown): Promise<LeadRecord | null>
     findMany(args: unknown): Promise<LeadRecord[]>
+    updateMany(args: unknown): Promise<{ count: number }>
+    count(args?: unknown): Promise<number>
   }
   type NotificationRecord = {
     id: string
@@ -86,7 +151,7 @@ declare module '@prisma/client' {
   type NotificationDelegate = {
     create(args: unknown): Promise<NotificationRecord>
     findMany(args: unknown): Promise<NotificationRecord[]>
-    count(args: unknown): Promise<number>
+    count(args?: unknown): Promise<number>
     updateMany(args: unknown): Promise<{ count: number }>
   }
   type AuditLogDelegate = { create(args: unknown): Promise<SeedRecord> }
@@ -118,6 +183,8 @@ declare module '@prisma/client' {
     focalX?: number
     focalY?: number
     publishedAt?: Date | string
+    webFields?: unknown
+    sortOrder?: number
   }
 
   export class PrismaClient {

@@ -4,13 +4,20 @@ import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { ListingsBrowser } from '@/components/listings/listings-browser'
 import { PropertyGridSkeleton } from '@/components/ui/skeleton'
+import { properties as staticProperties } from '@/data/properties'
+import { getPublishedProperties } from '@/features/listings/services/public-listings'
 
 export const metadata: Metadata = {
   title: 'Properties',
   description: 'Explore verified land, houses and apartments selected by Swadheen Estates.',
 }
 
-export default function PropertiesPage() {
+// Re-read the catalogue every minute so admin edits and additions go live
+// without a redeploy.
+export const revalidate = 60
+
+export default async function PropertiesPage() {
+  const listings = (await getPublishedProperties()) ?? staticProperties
   return (
     <div className="min-h-screen">
       <Header />
@@ -22,7 +29,7 @@ export default function PropertiesPage() {
             </div>
           }
         >
-          <ListingsBrowser />
+          <ListingsBrowser properties={listings} />
         </Suspense>
       </main>
       <Footer />
