@@ -173,9 +173,9 @@ export function AdminDashboard() {
         <div>
           <p className="eyebrow">{t('admin.todayDate')}</p>
           <h1 className="display-type mt-3 text-5xl leading-[.9]">
-            Good morning,
+            {t('admin.goodMorning')},
             <br />
-            <em className="font-normal text-terracotta">Ayesha.</em>
+            <em className="font-normal text-terracotta">{t('admin.userName')}.</em>
           </h1>
         </div>
         <div className="flex gap-2">

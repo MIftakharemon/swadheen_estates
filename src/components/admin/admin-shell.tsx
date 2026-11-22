@@ -163,11 +163,11 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             )}
           >
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-terracotta text-xs font-extrabold text-white">
-              AR
+              {t('admin.userInitials')}
             </span>
             {!collapsed && (
               <div className="min-w-0">
-                <p className="truncate text-xs font-bold">Ayesha Rahman</p>
+                <p className="truncate text-xs font-bold">{t('admin.userName')}</p>
                 <p className="mt-0.5 text-[10px] text-ink/45">{t('admin.manager')}</p>
               </div>
             )}
@@ -241,9 +241,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <div className="ml-1 hidden h-9 w-px bg-line sm:block" />
             <div className="hidden items-center gap-2 pl-2 sm:flex">
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-terracotta text-[10px] font-extrabold text-white">
-                AR
+                {t('admin.userInitials')}
               </span>
-              <span className="text-xs font-bold">Ayesha</span>
+              <span className="text-xs font-bold">{t('admin.userName')}</span>
             </div>
           </div>
         </header>

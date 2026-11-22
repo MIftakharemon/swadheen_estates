@@ -909,7 +909,7 @@ export function AdminReportsPage() {
           value="34.6%"
           note={t('admin.avgConversion')}
           items={[
-            ['Ayesha Rahman', '42%', 'bg-terracotta'],
+            [t('admin.userName'), '42%', 'bg-terracotta'],
             ['Tareq Mahmud', '35%', 'bg-moss'],
             ['Raisa Chowdhury', '28%', 'bg-gold'],
             [t('admin.teamAverage'), '34%', 'bg-ink/30'],
