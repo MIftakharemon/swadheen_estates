@@ -14,3 +14,4 @@ test-results
 prisma/dev.db
 public/uploads
 .DS_Store
+.env*

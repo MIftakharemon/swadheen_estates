@@ -11,7 +11,7 @@ export function proxy(request: NextRequest) {
     "object-src 'none'",
     "frame-ancestors 'none'",
     "form-action 'self'",
-    "img-src 'self' data: https://images.unsplash.com https://images.pexels.com https://i.ytimg.com",
+    "img-src 'self' data: https://images.unsplash.com https://images.pexels.com https://i.ytimg.com https://*.blob.vercel-storage.com",
     "media-src 'self' https:",
     "font-src 'self' https://fonts.gstatic.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",

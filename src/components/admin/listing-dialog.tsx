@@ -1,9 +1,10 @@
 'use client'
 
-import { Building2, Home, X } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { Building2, Home, UploadCloud, X } from 'lucide-react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useLocale } from '@/i18n/locale-provider'
+import { prepareListingImage } from '@/lib/storage/prepare-listing-image'
 import { cn } from '@/lib/utils'
 import type { AdminProjectDto, AdminPropertyDto } from '@/features/listings/types'
 
@@ -188,6 +189,118 @@ function Field({
       {children}
       {hint ? <span className="mt-1 block text-[10px] leading-4 text-ink/40">{hint}</span> : null}
     </label>
+  )
+}
+
+// Cover image field: paste a URL or upload a photo from the device (works on
+// desktop and mobile). Uploads are downscaled in the browser, sent to the
+// server route, and the returned public URL lands in the same draft value a
+// pasted URL would.
+function ImageField({
+  label,
+  value,
+  onChange,
+  className,
+}: {
+  label: string
+  value: string
+  onChange: (value: string) => void
+  className?: string
+}) {
+  const { t } = useLocale()
+  const inputId = useId()
+  const fileRef = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [brokenSrc, setBrokenSrc] = useState<string | null>(null)
+
+  const handleFile = async (file: File | null | undefined) => {
+    if (!file) return
+    setError(null)
+    setUploading(true)
+    try {
+      const prepared = await prepareListingImage(file)
+      if (!prepared.ok) {
+        setError(
+          prepared.reason === 'tooLarge'
+            ? t('dropzone.tooLarge', { name: file.name, size: '4 MB' })
+            : t('dropzone.unsupportedType', { name: file.name }),
+        )
+        return
+      }
+      const body = new FormData()
+      body.append('file', prepared.blob, prepared.filename)
+      const response = await fetch('/api/uploads/image', { method: 'POST', body })
+      if (!response.ok) {
+        const status = response.status
+        if (status === 413) setError(t('dropzone.tooLarge', { name: file.name, size: '4 MB' }))
+        else if (status === 400) setError(t('dropzone.unsupportedType', { name: file.name }))
+        else if (status === 503) setError(t('dropzone.storageNotConfigured'))
+        else if (status === 429) setError(t('admin.form.uploadRateLimited'))
+        else setError(t('dropzone.uploadFailed'))
+        return
+      }
+      const data = (await response.json().catch(() => null)) as { url?: string } | null
+      if (!data?.url) {
+        setError(t('dropzone.uploadFailed'))
+        return
+      }
+      onChange(data.url)
+    } catch {
+      setError(t('dropzone.uploadFailed'))
+    } finally {
+      setUploading(false)
+      if (fileRef.current) fileRef.current.value = ''
+    }
+  }
+
+  return (
+    <div className={cn('block', className)}>
+      <label htmlFor={inputId} className="text-xs font-bold">
+        {label}
+      </label>
+      <div className="mt-2 flex gap-2">
+        <input
+          id={inputId}
+          className={cn(inputClass, 'mt-0 min-w-0 flex-1')}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          placeholder="https://…"
+        />
+        <button
+          type="button"
+          disabled={uploading}
+          onClick={() => fileRef.current?.click()}
+          className="flex h-11 shrink-0 items-center gap-1.5 rounded-xl border border-line bg-stone px-3 text-xs font-bold transition hover:border-terracotta disabled:opacity-50"
+        >
+          <UploadCloud className="h-4 w-4" />
+          {uploading ? t('dropzone.uploading') : t('admin.form.uploadImage')}
+        </button>
+      </div>
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        className="sr-only"
+        onChange={(event) => {
+          void handleFile(event.target.files?.[0])
+          event.currentTarget.value = ''
+        }}
+      />
+      {value && brokenSrc !== value ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={value}
+          alt=""
+          className="mt-2 h-12 w-12 rounded-lg border border-line object-cover"
+          onError={() => setBrokenSrc(value)}
+        />
+      ) : null}
+      <span className="mt-1 block text-[10px] leading-4 text-ink/40">{t('admin.form.imageHint')}</span>
+      {error ? (
+        <span className="mt-1 block text-[10px] font-bold leading-4 text-danger">{error}</span>
+      ) : null}
+    </div>
   )
 }
 
@@ -591,14 +704,12 @@ export function ListingDialog({
               </Field>
 
               <SectionTitle>{t('admin.form.mediaCopy')}</SectionTitle>
-              <Field label={t('admin.form.image')} className="sm:col-span-2">
-                <input
-                  className={inputClass}
-                  value={propertyDraft.image}
-                  onChange={(event) => setProperty('image', event.target.value)}
-                  placeholder="https://…"
-                />
-              </Field>
+              <ImageField
+                label={t('admin.form.image')}
+                value={propertyDraft.image}
+                onChange={(value) => setProperty('image', value)}
+                className="sm:col-span-2"
+              />
               <Field
                 label={t('admin.form.gallery')}
                 hint={t('admin.form.galleryHint')}
@@ -749,14 +860,12 @@ export function ListingDialog({
                   placeholder="48"
                 />
               </Field>
-              <Field label={t('admin.form.coverImage')}>
-                <input
-                  className={inputClass}
-                  value={projectDraft.coverImage}
-                  onChange={(event) => setProject('coverImage', event.target.value)}
-                  placeholder="https://…"
-                />
-              </Field>
+              <ImageField
+                label={t('admin.form.coverImage')}
+                value={projectDraft.coverImage}
+                onChange={(value) => setProject('coverImage', value)}
+                className="sm:col-span-2"
+              />
               <Field label={t('admin.form.deliveredAt')}>
                 <input
                   className={inputClass}

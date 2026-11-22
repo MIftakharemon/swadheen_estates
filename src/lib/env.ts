@@ -4,6 +4,8 @@ const envSchema = z.object({
   DATABASE_URL: z.string().url().optional(),
   NEXT_PUBLIC_SITE_URL: z.string().url().default('http://localhost:3000'),
   AUTH_SECRET: z.string().min(32).optional(),
+  /** Vercel Blob read-write token backing the public `listing-images` store. */
+  BLOB_READ_WRITE_TOKEN: z.string().min(1).optional(),
   R2_PUBLIC_URL: z.string().url().optional(),
   R2_ACCOUNT_ID: z.string().optional(),
   R2_ENDPOINT: z.string().url().optional(),
@@ -18,6 +20,7 @@ export const env = envSchema.parse({
   DATABASE_URL: process.env.DATABASE_URL,
   NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
   AUTH_SECRET: process.env.AUTH_SECRET,
+  BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
   R2_PUBLIC_URL: process.env.R2_PUBLIC_URL,
   R2_ACCOUNT_ID: process.env.R2_ACCOUNT_ID,
   R2_ENDPOINT: process.env.R2_ENDPOINT,
