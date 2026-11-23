@@ -1,6 +1,6 @@
 'use client'
 
-import { AlertCircle, CheckCircle2, FileImage, FileVideo, UploadCloud, X } from 'lucide-react'
+import { AlertCircle, CheckCircle2, FileImage, UploadCloud, X } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useLocale } from '@/i18n/locale-provider'
@@ -19,7 +19,6 @@ const acceptedTypes = [
   'image/webp',
   'image/avif',
   'model/gltf-binary',
-  'video/mp4',
   'application/pdf',
 ]
 const maxSize = 150 * 1024 * 1024
@@ -166,19 +165,8 @@ export function MediaDropzone() {
         <div className="mt-4 space-y-2">
           {items.map((item) => (
             <div key={item.id} className="flex items-center gap-3 rounded-xl border border-line bg-paper p-3">
-              <span
-                className={cn(
-                  'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg',
-                  item.file.type.startsWith('video')
-                    ? 'bg-ink/10 text-ink'
-                    : 'bg-terracotta/10 text-terracotta',
-                )}
-              >
-                {item.file.type.startsWith('video') ? (
-                  <FileVideo className="h-4 w-4" />
-                ) : (
-                  <FileImage className="h-4 w-4" />
-                )}
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-terracotta/10 text-terracotta">
+                <FileImage className="h-4 w-4" />
               </span>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-xs font-bold">{item.file.name}</p>
