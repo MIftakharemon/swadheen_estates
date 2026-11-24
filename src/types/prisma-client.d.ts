@@ -71,6 +71,9 @@ declare module '@prisma/client' {
       args: unknown,
     ): Promise<{ id: string; name: string; email: string; role: string; passwordHash: string | null } | null>
     findMany(args: unknown): Promise<UserRecord[]>
+    update(args: unknown): Promise<UserRecord>
+    updateMany(args: unknown): Promise<{ count: number }>
+    delete(args: unknown): Promise<UserRecord>
     count(args?: unknown): Promise<number>
   }
   export type ProjectRecord = {
