@@ -480,6 +480,17 @@ export const en = {
   'profile.adminPanel': 'Admin panel',
   'profile.signOut': 'Sign out',
 
+  // Personal information — the member's own name and phone number
+  'profile.personalInfo': 'Personal information',
+  'profile.personalInfoCopy': 'Your name and phone number — the details the team uses to reach you.',
+  'profile.emailLocked': 'Email cannot be changed here — it is your sign-in identity.',
+  'profile.saveChanges': 'Save changes',
+  'profile.saving': 'Saving…',
+  'profile.saved': 'Your details are saved.',
+  'profile.loadFailed': 'Could not load your details. Please try again.',
+  'profile.saveFailed': 'Could not save your details. Please try again.',
+  'profile.unavailable': 'Your profile is unavailable right now.',
+
   // Register page
   'register.eyebrow': 'Create your account',
   'register.title1': 'Save the homes',
@@ -1557,6 +1568,17 @@ export const bn: Record<CopyKey, string> = {
   'profile.savedHomes': 'সেভ করা বাড়ি',
   'profile.adminPanel': 'অ্যাডমিন প্যানেল',
   'profile.signOut': 'সাইন আউট',
+
+  // Personal information — the member's own name and phone number
+  'profile.personalInfo': 'ব্যক্তিগত তথ্য',
+  'profile.personalInfoCopy': 'আপনার নাম ও ফোন নম্বর — টিম আপনার সঙ্গে যোগাযোগ করতে এগুলো ব্যবহার করে।',
+  'profile.emailLocked': 'ইমেইল এখানে বদলানো যায় না — এটাই আপনার সাইন-ইন পরিচয়।',
+  'profile.saveChanges': 'পরিবর্তন সেভ করুন',
+  'profile.saving': 'সেভ হচ্ছে…',
+  'profile.saved': 'আপনার তথ্য সেভ হয়েছে।',
+  'profile.loadFailed': 'আপনার তথ্য লোড করা যায়নি। আবার চেষ্টা করুন।',
+  'profile.saveFailed': 'আপনার তথ্য সেভ করা যায়নি। আবার চেষ্টা করুন।',
+  'profile.unavailable': 'আপনার প্রোফাইল এখন পাওয়া যাচ্ছে না।',
 
   // Register page
   'register.eyebrow': 'আপনার অ্যাকাউন্ট খুলুন',

@@ -48,8 +48,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: 'jwt', maxAge: 60 * 60 * 8 },
   trustHost: true,
   callbacks: {
-    jwt({ token, user }) {
+    jwt({ token, user, session, trigger }) {
       if (user) token.role = user.role
+      // After a profile save the client calls update({ name }) — carry the
+      // new name into the token so the header and profile menu show it at
+      // once, without another sign-in.
+      if (trigger === 'update' && session && typeof session === 'object') {
+        const direct = (session as { name?: unknown }).name
+        const nested = (session as { user?: { name?: unknown } }).user?.name
+        const nextName = typeof direct === 'string' ? direct : typeof nested === 'string' ? nested : undefined
+        if (nextName && nextName.trim().length > 0) token.name = nextName.trim()
+      }
       return token
     },
     session({ session, token }) {

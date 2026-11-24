@@ -45,9 +45,13 @@ export function PortalDashboard() {
           </Link>
           <div className="flex items-center gap-3">
             <NotificationBell scope="user" tone="stone" />
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-terracotta text-[10px] font-extrabold text-white">
+            <Link
+              href="/portal/profile"
+              aria-label={t('profile.personalInfo')}
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-terracotta text-[10px] font-extrabold text-white transition hover:opacity-85"
+            >
               {initialsOf(user?.name, user?.email)}
-            </span>
+            </Link>
           </div>
         </div>
       </header>
@@ -170,7 +174,7 @@ export function PortalDashboard() {
                 </div>
               </div>
               <Link
-                href="/portal/settings"
+                href="/portal/profile"
                 className="mt-5 inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.14em] text-terracotta"
               >
                 {t('portal.manageAccount')} <ChevronRight className="h-3.5 w-3.5" />

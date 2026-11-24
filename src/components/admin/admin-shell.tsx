@@ -22,9 +22,10 @@ import {
   Video,
   X,
 } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 import { useState } from 'react'
 import { adminNavigation } from '@/config/navigation'
-import { cn } from '@/lib/utils'
+import { cn, initialsOf } from '@/lib/utils'
 import { Logo } from '@/components/layout/logo'
 import { NotificationBell } from '@/components/ui/notification-bell'
 import { useTheme } from '@/components/providers/theme-provider'
@@ -68,6 +69,13 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const { theme, toggleTheme } = useTheme()
   const { t } = useLocale()
   const pathname = usePathname()
+  // The signed-in staff member — the shell used to show one hardcoded name
+  // for everyone. The same session feeds the profile menu on the public site.
+  const { data: session } = useSession() ?? { data: null }
+  const adminUser = session?.user
+  const adminDisplayName = adminUser?.name ?? t('admin.userName')
+  const adminInitials = adminUser ? initialsOf(adminUser.name, adminUser.email) : t('admin.userInitials')
+  const adminSubtitle = adminUser?.email ?? t('admin.manager')
   const activeSection = adminNavigation.find((item) => isSectionActive(item.href, pathname))
   const settingsActive = isSectionActive('/admin/settings', pathname)
   return (
@@ -159,23 +167,24 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
         <div className="border-t border-line p-3">
-          <div
+          <Link
+            href="/portal/profile"
             className={cn(
-              'flex items-center gap-3 rounded-xl bg-stone p-3',
+              'flex items-center gap-3 rounded-xl bg-stone p-3 transition hover:bg-stone/70',
               collapsed && 'justify-center p-2',
             )}
           >
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-terracotta text-xs font-extrabold text-white">
-              {t('admin.userInitials')}
+              {adminInitials}
             </span>
             {!collapsed && (
               <div className="min-w-0">
-                <p className="truncate text-xs font-bold">{t('admin.userName')}</p>
-                <p className="mt-0.5 text-[10px] text-ink/45">{t('admin.manager')}</p>
+                <p className="truncate text-xs font-bold">{adminDisplayName}</p>
+                <p className="mt-0.5 truncate text-[10px] text-ink/45">{adminSubtitle}</p>
               </div>
             )}
             {!collapsed && <ChevronDown className="ml-auto h-3.5 w-3.5 text-ink/35" />}
-          </div>
+          </Link>
         </div>
       </aside>
       {mobileOpen && (
@@ -242,12 +251,15 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
             </button>
             <div className="ml-1 hidden h-9 w-px bg-line sm:block" />
-            <div className="hidden items-center gap-2 pl-2 sm:flex">
+            <Link
+              href="/portal/profile"
+              className="hidden items-center gap-2 pl-2 transition hover:opacity-80 sm:flex"
+            >
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-terracotta text-[10px] font-extrabold text-white">
-                {t('admin.userInitials')}
+                {adminInitials}
               </span>
-              <span className="text-xs font-bold">{t('admin.userName')}</span>
-            </div>
+              <span className="text-xs font-bold">{adminDisplayName}</span>
+            </Link>
           </div>
         </header>
         <main className="p-5 sm:p-8">{children}</main>

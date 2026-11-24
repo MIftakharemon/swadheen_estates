@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { CircleUserRound, LayoutDashboard, LogOut, Shapes } from 'lucide-react'
+import { ChevronRight, CircleUserRound, LayoutDashboard, LogOut, Shapes, UserRound } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
@@ -11,7 +11,8 @@ import { useLocale } from '@/i18n/locale-provider'
 const STAFF_ROLES = ['SUPER_ADMIN', 'MANAGER', 'SALES_AGENT', 'CONTENT_EDITOR']
 
 // The header's account entry: anonymous visitors get sign-in / create-account
-// links, signed-in users get their space, admin panel (staff) and sign out.
+// links, signed-in users get their personal information, their space, admin
+// panel (staff) and sign out. The name at the top is a link to /portal/profile.
 export function ProfileMenu({ overlay = false }: { overlay?: boolean }) {
   const { t } = useLocale()
   // next-auth's useSession() yields undefined when no SessionProvider is
@@ -75,11 +76,27 @@ export function ProfileMenu({ overlay = false }: { overlay?: boolean }) {
         <div className="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-[min(19rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-line bg-paper text-ink shadow-float">
           {signedIn && user ? (
             <>
-              <div className="border-b border-line px-4 py-3">
-                <p className="truncate text-xs font-extrabold">{user.name ?? user.email}</p>
-                {user.email && <p className="mt-0.5 truncate text-[10px] text-ink/50">{user.email}</p>}
-              </div>
+              <Link
+                href="/portal/profile"
+                onClick={() => setOpen(false)}
+                className="group flex items-center justify-between gap-3 border-b border-line px-4 py-3 text-left transition hover:bg-stone"
+              >
+                <span className="min-w-0">
+                  <span className="block truncate text-xs font-extrabold">{user.name ?? user.email}</span>
+                  {user.email && (
+                    <span className="mt-0.5 block truncate text-[10px] text-ink/50">{user.email}</span>
+                  )}
+                </span>
+                <ChevronRight className="h-3.5 w-3.5 shrink-0 text-ink/35 transition group-hover:text-terracotta" />
+              </Link>
               <nav className="p-1.5">
+                <Link
+                  href="/portal/profile"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-bold transition hover:bg-stone"
+                >
+                  <UserRound className="h-3.5 w-3.5 text-terracotta" /> {t('profile.personalInfo')}
+                </Link>
                 <Link
                   href="/portal"
                   onClick={() => setOpen(false)}
