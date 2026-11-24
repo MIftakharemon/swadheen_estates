@@ -21,6 +21,8 @@ export function projectDto(row: ProjectRecord): AdminProjectDto {
     location: row.location,
     description: row.description,
     coverImage: row.coverImage,
+    gallery: row.gallery ?? [],
+    videoUrl: row.videoUrl ?? null,
     totalUnits: row.totalUnits,
     deliveredAt: row.deliveredAt ? row.deliveredAt.toISOString() : null,
     propertyCount: row._count?.properties ?? 0,

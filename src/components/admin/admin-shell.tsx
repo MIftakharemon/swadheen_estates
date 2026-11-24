@@ -8,6 +8,7 @@ import {
   ChartNoAxesCombined,
   ChevronDown,
   Command,
+  FolderKanban,
   Images,
   LayoutDashboard,
   Menu,
@@ -32,6 +33,7 @@ import { useLocale } from '@/i18n/locale-provider'
 const icons = {
   LayoutDashboard,
   Building2,
+  FolderKanban,
   Users,
   UserRound,
   CalendarDays,
@@ -51,11 +53,12 @@ function isSectionActive(href: string, pathname: string) {
 const adminLabels: Record<string, string> = {
   Overview: 'admin.overview',
   Properties: 'admin.properties',
+  Projects: 'admin.projects',
   Users: 'admin.users',
   Leads: 'admin.leads',
   Visits: 'admin.visits',
   // 'Media library': 'admin.mediaLibrary',
-  'Project videos': 'admin.projectVideos',
+  // 'Project videos': 'admin.projectVideos',
   Reports: 'admin.reports',
 }
 

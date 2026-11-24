@@ -111,9 +111,11 @@ export async function POST(request: Request) {
       })
       return NextResponse.json({ ok: true, property: propertyDto(row) }, { status: 201 })
     }
+    const { videoUrl, ...projectFields } = data.project
     const row = await db.project.create({
       data: {
-        ...data.project,
+        ...projectFields,
+        videoUrl: videoUrl || null,
         deliveredAt: data.project.deliveredAt ? new Date(data.project.deliveredAt) : null,
       },
     })

@@ -80,6 +80,8 @@ declare module '@prisma/client' {
     location: string
     description: string
     coverImage: string
+    gallery: string[]
+    videoUrl: string | null
     totalUnits: number
     deliveredAt: Date | null
     createdAt: Date

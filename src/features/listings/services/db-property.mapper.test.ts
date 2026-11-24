@@ -136,6 +136,7 @@ function formFor(property: Property) {
     has3d: property.has3d,
     has360: property.has360,
     hasVideo: property.hasVideo,
+    videoUrl: property.videoUrl ?? '',
     projectSlug: property.projectSlug ?? '',
     completion: property.completion ?? '',
     focalX: property.focalPoint.x,

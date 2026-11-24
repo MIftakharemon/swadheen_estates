@@ -33,6 +33,8 @@ export type Property = {
   has3d: boolean
   has360: boolean
   hasVideo: boolean
+  // Optional video link — stored as a URL only, never a file upload.
+  videoUrl?: string | null
   project?: string
   projectSlug?: string
   completion?: string

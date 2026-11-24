@@ -114,7 +114,6 @@ export function AdminPropertiesPage() {
   const [projectRows, setProjectRows] = useState<AdminProjectDto[]>([])
   const [loaded, setLoaded] = useState(false)
   const [loadFailed, setLoadFailed] = useState(false)
-  const [tab, setTab] = useState<ListingKind>('PROPERTY')
   const [query, setQuery] = useState('')
   const [dialog, setDialog] = useState<{
     mode: 'create' | 'edit'
@@ -143,9 +142,6 @@ export function AdminPropertiesPage() {
   const filteredProperties = propertyRows.filter((item) =>
     `${item.title} ${item.location} ${item.slug}`.toLowerCase().includes(lowerQuery),
   )
-  const filteredProjects = projectRows.filter((item) =>
-    `${item.name} ${item.location} ${item.slug}`.toLowerCase().includes(lowerQuery),
-  )
 
   const removeListing = async (kind: ListingKind, id: string) => {
     if (!window.confirm(t('admin.confirmDeleteListing'))) return
@@ -159,38 +155,25 @@ export function AdminPropertiesPage() {
   }
 
   const exportCsv = () => {
-    const rows =
-      tab === 'PROPERTY'
-        ? [
-            ['Title', 'Slug', 'Type', 'Status', 'Price', 'Location', 'Updated'],
-            ...filteredProperties.map((item) => [
-              item.title,
-              item.slug,
-              item.type,
-              item.dbStatus,
-              String(item.price),
-              item.location,
-              item.updatedAt,
-            ]),
-          ]
-        : [
-            ['Name', 'Slug', 'Location', 'Units', 'Listings', 'Updated'],
-            ...filteredProjects.map((item) => [
-              item.name,
-              item.slug,
-              item.location,
-              String(item.totalUnits),
-              String(item.propertyCount ?? 0),
-              item.updatedAt,
-            ]),
-          ]
+    const rows = [
+      ['Title', 'Slug', 'Type', 'Status', 'Price', 'Location', 'Updated'],
+      ...filteredProperties.map((item) => [
+        item.title,
+        item.slug,
+        item.type,
+        item.dbStatus,
+        String(item.price),
+        item.location,
+        item.updatedAt,
+      ]),
+    ]
     const csv = rows
       .map((row) => row.map((cell) => `"${(cell ?? '').replace(/"/g, '""')}"`).join(','))
       .join('\n')
     const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }))
     const anchor = document.createElement('a')
     anchor.href = url
-    anchor.download = tab === 'PROPERTY' ? 'properties.csv' : 'projects.csv'
+    anchor.download = 'properties.csv'
     anchor.click()
     URL.revokeObjectURL(url)
   }
@@ -201,40 +184,20 @@ export function AdminPropertiesPage() {
         <div>
           <p className="eyebrow">{t('admin.inventory')}</p>
           <h1 className="display-type mt-3 text-5xl">{t('admin.propertyManagement')}</h1>
-          <p className="mt-3 text-sm text-ink/55">
-            {`${propertyRows.length} ${t('properties')} · ${projectRows.length} ${t('projects')}`}
-          </p>
+          <p className="mt-3 text-sm text-ink/55">{`${propertyRows.length} ${t('properties')}`}</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={exportCsv}>
             <Download className="h-3.5 w-3.5" /> {t('admin.exportCsv')}
           </Button>
-          <Button size="sm" onClick={() => setDialog({ mode: 'create', kind: null })}>
+          <Button size="sm" onClick={() => setDialog({ mode: 'create', kind: 'PROPERTY' })}>
             <Plus className="h-3.5 w-3.5" /> {t('admin.addListing')}
           </Button>
         </div>
       </div>
 
       <div className="mt-8 rounded-panel border border-line bg-paper shadow-soft">
-        <div className="flex flex-col gap-3 border-b border-line p-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex gap-2">
-            {(['PROPERTY', 'PROJECT'] as const).map((kind) => (
-              <button
-                key={kind}
-                type="button"
-                onClick={() => setTab(kind)}
-                className={cn(
-                  'rounded-full px-4 py-2 text-xs font-bold transition',
-                  tab === kind ? 'bg-ink text-paper' : 'text-ink/50 hover:bg-stone',
-                )}
-              >
-                {kind === 'PROPERTY' ? t('properties') : t('projects')}
-                <span className="ml-1.5 text-[10px] opacity-60">
-                  {kind === 'PROPERTY' ? propertyRows.length : projectRows.length}
-                </span>
-              </button>
-            ))}
-          </div>
+        <div className="flex flex-col gap-3 border-b border-line p-4 sm:flex-row sm:items-center sm:justify-end">
           <label className="flex h-10 items-center gap-2 rounded-full border border-line bg-stone/50 px-3">
             <Search className="h-3.5 w-3.5 text-ink/35" />
             <input
@@ -250,12 +213,11 @@ export function AdminPropertiesPage() {
           <p className="px-5 py-10 text-center text-xs font-semibold text-ink/45">{t('notif.loading')}</p>
         ) : loadFailed ? (
           <p className="px-5 py-10 text-center text-xs font-bold text-danger">{t('admin.loadFailed')}</p>
-        ) : tab === 'PROPERTY' ? (
-          filteredProperties.length === 0 ? (
-            <p className="px-5 py-10 text-center text-xs font-semibold text-ink/45">
-              {t('admin.noListings')}
-            </p>
-          ) : (
+        ) : filteredProperties.length === 0 ? (
+          <p className="px-5 py-10 text-center text-xs font-semibold text-ink/45">
+            {t('admin.noListings')}
+          </p>
+        ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[820px] text-left">
                 <thead className="bg-stone/60 text-[10px] font-bold uppercase tracking-[.13em] text-ink/40">
@@ -345,6 +307,132 @@ export function AdminPropertiesPage() {
               </table>
             </div>
           )
+        }
+      </div>
+
+      {dialog ? (
+        <ListingDialog
+          kind={dialog.kind}
+          mode={dialog.mode}
+          property={dialog.property ?? null}
+          project={dialog.project ?? null}
+          projects={projectRows}
+          onClose={() => setDialog(null)}
+          onSaved={() => {
+            setDialog(null)
+            load()
+          }}
+        />
+      ) : null}
+    </div>
+  )
+}
+
+// Projects live in their own section: this list holds only projects, and its
+// Add listing button opens the dialog straight in PROJECT mode.
+export function AdminProjectsPage() {
+  const { t, locale } = useLocale()
+  const [projectRows, setProjectRows] = useState<AdminProjectDto[]>([])
+  const [loaded, setLoaded] = useState(false)
+  const [loadFailed, setLoadFailed] = useState(false)
+  const [query, setQuery] = useState('')
+  const [dialog, setDialog] = useState<{ mode: 'create' | 'edit'; project?: AdminProjectDto } | null>(
+    null,
+  )
+
+  const load = useCallback(() => {
+    fetch('/api/admin/listings')
+      .then((response) => (response.ok ? response.json() : Promise.reject(new Error('load failed'))))
+      .then((data: { projects?: AdminProjectDto[] }) => {
+        setProjectRows(data.projects ?? [])
+        setLoadFailed(false)
+      })
+      .catch(() => setLoadFailed(true))
+      .finally(() => setLoaded(true))
+  }, [])
+
+  useEffect(() => {
+    load()
+  }, [load])
+
+  const lowerQuery = query.trim().toLowerCase()
+  const filteredProjects = projectRows.filter((item) =>
+    `${item.name} ${item.location} ${item.slug}`.toLowerCase().includes(lowerQuery),
+  )
+
+  const removeProject = async (id: string) => {
+    if (!window.confirm(t('admin.confirmDeleteListing'))) return
+    try {
+      const response = await fetch(`/api/admin/listings/${id}?kind=PROJECT`, { method: 'DELETE' })
+      if (!response.ok) throw new Error('delete failed')
+      load()
+    } catch {
+      window.alert(t('admin.deleteFailed'))
+    }
+  }
+
+  const exportCsv = () => {
+    const rows = [
+      ['Name', 'Slug', 'Location', 'Units', 'Listings', 'Updated'],
+      ...filteredProjects.map((item) => [
+        item.name,
+        item.slug,
+        item.location,
+        String(item.totalUnits),
+        String(item.propertyCount ?? 0),
+        item.updatedAt,
+      ]),
+    ]
+    const csv = rows
+      .map((row) => row.map((cell) => `"${(cell ?? '').replace(/"/g, '""')}"`).join(','))
+      .join('\n')
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }))
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = 'projects.csv'
+    anchor.click()
+    URL.revokeObjectURL(url)
+  }
+
+  return (
+    <div className="mx-auto max-w-[1440px]">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div>
+          <p className="eyebrow">{t('admin.inventory')}</p>
+          <h1 className="display-type mt-3 text-5xl">{t('admin.projectManagement')}</h1>
+          <p className="mt-3 text-sm text-ink/55">{`${projectRows.length} ${t('projects')}`}</p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={exportCsv}>
+            <Download className="h-3.5 w-3.5" /> {t('admin.exportCsv')}
+          </Button>
+          <Button size="sm" onClick={() => setDialog({ mode: 'create' })}>
+            <Plus className="h-3.5 w-3.5" /> {t('admin.addListing')}
+          </Button>
+        </div>
+      </div>
+
+      <div className="mt-8 rounded-panel border border-line bg-paper shadow-soft">
+        <div className="flex flex-col gap-3 border-b border-line p-4 sm:flex-row sm:items-center sm:justify-end">
+          <label className="flex h-10 items-center gap-2 rounded-full border border-line bg-stone/50 px-3">
+            <Search className="h-3.5 w-3.5 text-ink/35" />
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={t('admin.searchInventory')}
+              className="w-full bg-transparent text-xs font-semibold outline-none placeholder:text-ink/35 sm:w-64"
+            />
+          </label>
+        </div>
+
+        {!loaded ? (
+          <p className="px-5 py-10 text-center text-xs font-semibold text-ink/45">
+            {t('notif.loading')}
+          </p>
+        ) : loadFailed ? (
+          <p className="px-5 py-10 text-center text-xs font-bold text-danger">
+            {t('admin.loadFailed')}
+          </p>
         ) : filteredProjects.length === 0 ? (
           <p className="px-5 py-10 text-center text-xs font-semibold text-ink/45">
             {t('admin.noListings')}
@@ -398,7 +486,7 @@ export function AdminPropertiesPage() {
                       <div className="flex items-center justify-end gap-1">
                         <button
                           type="button"
-                          onClick={() => setDialog({ mode: 'edit', kind: 'PROJECT', project })}
+                          onClick={() => setDialog({ mode: 'edit', project })}
                           className="flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-stone"
                           aria-label={`${t('admin.editProject')} — ${project.name}`}
                         >
@@ -406,7 +494,7 @@ export function AdminPropertiesPage() {
                         </button>
                         <button
                           type="button"
-                          onClick={() => removeListing('PROJECT', project.id)}
+                          onClick={() => removeProject(project.id)}
                           className="flex h-8 w-8 items-center justify-center rounded-full text-danger transition hover:bg-danger/10"
                           aria-label={`${t('admin.removeListing')} — ${project.name}`}
                         >
@@ -424,9 +512,8 @@ export function AdminPropertiesPage() {
 
       {dialog ? (
         <ListingDialog
-          kind={dialog.kind}
+          kind="PROJECT"
           mode={dialog.mode}
-          property={dialog.property ?? null}
           project={dialog.project ?? null}
           projects={projectRows}
           onClose={() => setDialog(null)}

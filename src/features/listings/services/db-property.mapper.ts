@@ -73,6 +73,7 @@ export function mapDbProperty(row: PropertyRecord): Property {
     has3d: fields.has3d === true,
     has360: fields.has360 === true,
     hasVideo: fields.hasVideo === true,
+    ...(fields.videoUrl ? { videoUrl: fields.videoUrl } : {}),
     ...(project ? { project } : {}),
     ...(projectSlug ? { projectSlug } : {}),
     ...(completion ? { completion } : {}),

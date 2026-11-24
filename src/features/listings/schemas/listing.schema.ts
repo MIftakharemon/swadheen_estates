@@ -28,6 +28,15 @@ const imageUrlSchema = z
     message: 'Enter an image URL.',
   })
 
+// Video links are URLs only — the admin panel never uploads video files.
+const videoUrlSchema = z
+  .string()
+  .trim()
+  .max(500)
+  .refine((value) => value === '' || /^https?:\/\//.test(value), {
+    message: 'Enter a video URL.',
+  })
+
 const lineList = (maxItems: number, maxLength: number) =>
   z.array(z.string().trim().min(1).max(maxLength)).max(maxItems)
 
@@ -63,6 +72,7 @@ export const propertyFormSchema = z.object({
   has3d: z.boolean().default(false),
   has360: z.boolean().default(false),
   hasVideo: z.boolean().default(false),
+  videoUrl: videoUrlSchema.default(''),
   projectSlug: z
     .string()
     .trim()
@@ -82,6 +92,8 @@ export const projectFormSchema = z.object({
   location: z.string().trim().min(2).max(160),
   description: z.string().trim().max(2000).default(''),
   coverImage: imageUrlSchema.default(''),
+  gallery: z.array(imageUrlSchema).max(12).default([]),
+  videoUrl: videoUrlSchema.default(''),
   totalUnits: z.number().int().min(0).max(100_000).default(0),
   // ISO date (yyyy-mm-dd) or empty for "not delivered yet".
   deliveredAt: z.string().trim().max(40).default(''),

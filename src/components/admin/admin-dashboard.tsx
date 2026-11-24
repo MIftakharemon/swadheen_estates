@@ -107,6 +107,83 @@ const stageDisplayKeys: Record<string, string> = {
   Negotiation: 'admin.stageNegotiation',
 }
 
+const filterStageKeys = [
+  'admin.stageNew',
+  'admin.stageContacted',
+  'admin.stageVisitScheduled',
+  'admin.stageNegotiation',
+] as const
+
+// Header/panel filter: narrows the Recent lead activity list to one stage.
+function StageFilterMenu({
+  variant,
+  open,
+  onToggle,
+  value,
+  onChange,
+}: {
+  variant: 'outline' | 'ghost'
+  open: boolean
+  onToggle: (open: boolean) => void
+  value: string | null
+  onChange: (value: string | null) => void
+}) {
+  const { t } = useLocale()
+  return (
+    <div className="relative">
+      <Button
+        variant={variant}
+        size="sm"
+        aria-expanded={open}
+        onClick={() => onToggle(!open)}
+        className={cn(value && 'border-terracotta text-terracotta')}
+      >
+        <Filter className="h-3.5 w-3.5" /> {value ? t(value as never) : t('filter')}
+      </Button>
+      {open ? (
+        <>
+          <div
+            className="fixed inset-0 z-20"
+            onMouseDown={() => onToggle(false)}
+            aria-hidden="true"
+          />
+          <div className="absolute right-0 top-full z-30 mt-2 w-52 rounded-xl border border-line bg-paper p-1 shadow-float">
+            <button
+              type="button"
+              onClick={() => {
+                onChange(null)
+                onToggle(false)
+              }}
+              className={cn(
+                'block w-full rounded-lg px-3 py-2 text-left text-xs font-bold transition hover:bg-stone',
+                !value && 'text-terracotta',
+              )}
+            >
+              {t('admin.allStages')}
+            </button>
+            {filterStageKeys.map((key) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => {
+                  onChange(key)
+                  onToggle(false)
+                }}
+                className={cn(
+                  'block w-full rounded-lg px-3 py-2 text-left text-xs font-bold transition hover:bg-stone',
+                  value === key && 'text-terracotta',
+                )}
+              >
+                {t(key)}
+              </button>
+            ))}
+          </div>
+        </>
+      ) : null}
+    </div>
+  )
+}
+
 const stageColors: Record<string, string> = {
   New: 'bg-[hsl(var(--info)/.12)] text-[hsl(var(--info))]',
   Contacted: 'bg-stone text-ink/60',
@@ -167,6 +244,11 @@ export function AdminDashboard() {
   const { t } = useLocale()
   const ranges = [t('admin.last7Days'), t('admin.last30Days'), t('admin.thisYear')]
   const [range, setRange] = useState(ranges[1] ?? '')
+  const [stageFilter, setStageFilter] = useState<string | null>(null)
+  const [filterOpen, setFilterOpen] = useState(false)
+  const [panelFilterOpen, setPanelFilterOpen] = useState(false)
+  // The Filter button narrows the Recent lead activity list to one stage.
+  const visibleLeads = stageFilter ? leads.filter((lead) => lead.stageKey === stageFilter) : leads
   return (
     <div className="mx-auto max-w-[1440px]">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
@@ -179,12 +261,13 @@ export function AdminDashboard() {
           </h1>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            <Filter className="h-3.5 w-3.5" /> {t('filter')}
-          </Button>
-          <Button size="sm">
-            <Plus className="h-3.5 w-3.5" /> {t('admin.addListing')}
-          </Button>
+          <StageFilterMenu
+            variant="outline"
+            open={filterOpen}
+            onToggle={setFilterOpen}
+            value={stageFilter}
+            onChange={setStageFilter}
+          />
         </div>
       </div>
       <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -325,14 +408,24 @@ export function AdminDashboard() {
             <p className="mt-1 text-xl font-bold">{t('admin.recentLeadActivity')}</p>
           </div>
           <div className="flex gap-2">
-            <Button variant="ghost" size="sm">
-              <Filter className="h-3.5 w-3.5" /> {t('filters')}
-            </Button>
+            <StageFilterMenu
+              variant="ghost"
+              open={panelFilterOpen}
+              onToggle={setPanelFilterOpen}
+              value={stageFilter}
+              onChange={setStageFilter}
+            />
             <ButtonLink href="/admin/leads" variant="outline" size="sm">
               {t('viewAll')} <ArrowUpRight className="h-3.5 w-3.5" />
             </ButtonLink>
           </div>
         </div>
+        {visibleLeads.length === 0 ? (
+          <p className="px-6 py-8 text-center text-xs font-semibold text-ink/45">
+            {t('admin.noLeadsMatchFilter')}
+          </p>
+        ) : (
+          <>
         <div className="hidden overflow-x-auto md:block">
           <table className="w-full text-left">
             <thead className="bg-stone/60 text-[10px] font-bold uppercase tracking-[.13em] text-ink/40">
@@ -346,7 +439,7 @@ export function AdminDashboard() {
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
-              {leads.map((lead) => (
+              {visibleLeads.map((lead) => (
                 <tr key={lead.name} className="group transition hover:bg-stone/40">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
@@ -402,7 +495,7 @@ export function AdminDashboard() {
           </table>
         </div>
         <div className="divide-y divide-line md:hidden">
-          {leads.map((lead) => (
+          {visibleLeads.map((lead) => (
             <div key={lead.name} className="p-5">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
@@ -437,6 +530,8 @@ export function AdminDashboard() {
             </div>
           ))}
         </div>
+          </>
+        )}
       </section>
       <div className="mt-7 grid gap-6 lg:grid-cols-2">
         <section className="rounded-panel border border-line bg-paper p-5 shadow-soft">

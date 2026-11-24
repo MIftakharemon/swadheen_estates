@@ -1,6 +1,6 @@
 'use client'
 
-import { Building2, Home, UploadCloud, X } from 'lucide-react'
+import { Building2, Home, Plus, Trash2, UploadCloud, X } from 'lucide-react'
 import { useEffect, useId, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useLocale } from '@/i18n/locale-provider'
@@ -30,7 +30,8 @@ type PropertyDraft = {
   floor: string
   facing: string
   image: string
-  galleryText: string
+  gallery: string[]
+  videoUrl: string
   summary: string
   summaryBn: string
   description: string
@@ -55,6 +56,8 @@ type ProjectDraft = {
   location: string
   description: string
   coverImage: string
+  gallery: string[]
+  videoUrl: string
   totalUnits: string
   deliveredAt: string
 }
@@ -76,7 +79,8 @@ const emptyPropertyDraft: PropertyDraft = {
   floor: '',
   facing: '',
   image: '',
-  galleryText: '',
+  gallery: [],
+  videoUrl: '',
   summary: '',
   summaryBn: '',
   description: '',
@@ -101,6 +105,8 @@ const emptyProjectDraft: ProjectDraft = {
   location: '',
   description: '',
   coverImage: '',
+  gallery: [],
+  videoUrl: '',
   totalUnits: '',
   deliveredAt: '',
 }
@@ -123,7 +129,8 @@ function propertyToDraft(property: AdminPropertyDto): PropertyDraft {
     floor: property.floor ?? '',
     facing: property.facing ?? '',
     image: property.image,
-    galleryText: property.gallery.join('\n'),
+    gallery: [...property.gallery],
+    videoUrl: property.videoUrl ?? '',
     summary: property.summary,
     summaryBn: property.summaryBn ?? '',
     description: property.description,
@@ -150,6 +157,8 @@ function projectToDraft(project: AdminProjectDto): ProjectDraft {
     location: project.location,
     description: project.description,
     coverImage: project.coverImage,
+    gallery: [...(project.gallery ?? [])],
+    videoUrl: project.videoUrl ?? '',
     totalUnits: String(project.totalUnits),
     deliveredAt: project.deliveredAt ? project.deliveredAt.slice(0, 10) : '',
   }
@@ -304,6 +313,59 @@ function ImageField({
   )
 }
 
+// Extra listing photos beyond the cover: every row is the same URL-or-upload
+// control as the cover image, with add/remove so admins can build a gallery.
+function GalleryField({
+  label,
+  hint,
+  images,
+  onChange,
+  className,
+}: {
+  label: string
+  hint: string
+  images: string[]
+  onChange: (images: string[]) => void
+  className?: string
+}) {
+  const { t } = useLocale()
+  const updateAt = (index: number, value: string) =>
+    onChange(images.map((item, itemIndex) => (itemIndex === index ? value : item)))
+  return (
+    <div className={cn('block', className)}>
+      <p className="text-xs font-bold">{label}</p>
+      <span className="mt-1 block text-[10px] leading-4 text-ink/40">{hint}</span>
+      <div className="mt-2 space-y-3">
+        {images.map((value, index) => (
+          <div key={index} className="flex items-start gap-2">
+            <ImageField
+              label={`${t('admin.form.galleryImage')} ${index + 1}`}
+              value={value}
+              onChange={(next) => updateAt(index, next)}
+              className="min-w-0 flex-1"
+            />
+            <button
+              type="button"
+              onClick={() => onChange(images.filter((_, itemIndex) => itemIndex !== index))}
+              aria-label={`${t('admin.form.removeImage')} ${index + 1}`}
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-line bg-stone text-danger transition hover:border-danger"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={() => onChange([...images, ''])}
+        className="mt-3 flex items-center gap-1.5 rounded-xl border border-line bg-stone px-3 py-2 text-xs font-bold transition hover:border-terracotta"
+      >
+        <Plus className="h-3.5 w-3.5" /> {t('admin.form.addImage')}
+      </button>
+    </div>
+  )
+}
+
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <p className="col-span-full border-b border-line pb-2 text-[10px] font-bold uppercase tracking-[.14em] text-ink/40">
@@ -418,7 +480,8 @@ export function ListingDialog({
                 floor: propertyDraft.floor.trim(),
                 facing: propertyDraft.facing.trim(),
                 image: propertyDraft.image.trim(),
-                gallery: splitLines(propertyDraft.galleryText),
+                gallery: propertyDraft.gallery.map((item) => item.trim()).filter(Boolean),
+                videoUrl: propertyDraft.videoUrl.trim(),
                 summary: propertyDraft.summary.trim(),
                 summaryBn: propertyDraft.summaryBn.trim(),
                 description: propertyDraft.description.trim(),
@@ -430,7 +493,7 @@ export function ListingDialog({
                 verified: propertyDraft.verified,
                 has3d: propertyDraft.has3d,
                 has360: propertyDraft.has360,
-                hasVideo: propertyDraft.hasVideo,
+                hasVideo: propertyDraft.hasVideo || Boolean(propertyDraft.videoUrl.trim()),
                 projectSlug: propertyDraft.projectSlug.trim(),
                 completion: propertyDraft.completion.trim(),
                 focalX: toNumber(propertyDraft.focalX, 50),
@@ -445,6 +508,8 @@ export function ListingDialog({
                 location: projectDraft.location.trim(),
                 description: projectDraft.description.trim(),
                 coverImage: projectDraft.coverImage.trim(),
+                gallery: projectDraft.gallery.map((item) => item.trim()).filter(Boolean),
+                videoUrl: projectDraft.videoUrl.trim(),
                 totalUnits: toNumber(projectDraft.totalUnits),
                 deliveredAt: projectDraft.deliveredAt,
               },
@@ -710,16 +775,25 @@ export function ListingDialog({
                 onChange={(value) => setProperty('image', value)}
                 className="sm:col-span-2"
               />
-              <Field
+              <GalleryField
                 label={t('admin.form.gallery')}
                 hint={t('admin.form.galleryHint')}
+                images={propertyDraft.gallery}
+                onChange={(images) => setProperty('gallery', images)}
+                className="sm:col-span-2"
+              />
+              <Field
+                label={t('admin.form.videoUrl')}
+                hint={t('admin.form.videoUrlHint')}
                 className="sm:col-span-2"
               >
-                <textarea
-                  className={textareaClass}
-                  rows={3}
-                  value={propertyDraft.galleryText}
-                  onChange={(event) => setProperty('galleryText', event.target.value)}
+                <input
+                  className={inputClass}
+                  type="url"
+                  inputMode="url"
+                  value={propertyDraft.videoUrl}
+                  onChange={(event) => setProperty('videoUrl', event.target.value)}
+                  placeholder="https://youtube.com/watch?v=…"
                 />
               </Field>
               <Field label={t('admin.form.summary')}>
@@ -866,6 +940,27 @@ export function ListingDialog({
                 onChange={(value) => setProject('coverImage', value)}
                 className="sm:col-span-2"
               />
+              <GalleryField
+                label={t('admin.form.gallery')}
+                hint={t('admin.form.galleryHint')}
+                images={projectDraft.gallery}
+                onChange={(images) => setProject('gallery', images)}
+                className="sm:col-span-2"
+              />
+              <Field
+                label={t('admin.form.videoUrl')}
+                hint={t('admin.form.videoUrlHint')}
+                className="sm:col-span-2"
+              >
+                <input
+                  className={inputClass}
+                  type="url"
+                  inputMode="url"
+                  value={projectDraft.videoUrl}
+                  onChange={(event) => setProject('videoUrl', event.target.value)}
+                  placeholder="https://youtube.com/watch?v=…"
+                />
+              </Field>
               <Field label={t('admin.form.deliveredAt')}>
                 <input
                   className={inputClass}

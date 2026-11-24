@@ -87,10 +87,12 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     }
     const projectRow = await db.project.findUnique({ where: { id } })
     if (!projectRow) return NextResponse.json({ error: 'Project not found.' }, { status: 404 })
+    const { videoUrl, ...projectFields } = data.project
     const row = await db.project.update({
       where: { id },
       data: {
-        ...data.project,
+        ...projectFields,
+        videoUrl: videoUrl || null,
         deliveredAt: data.project.deliveredAt ? new Date(data.project.deliveredAt) : null,
       },
       include: { _count: { select: { properties: true } } },

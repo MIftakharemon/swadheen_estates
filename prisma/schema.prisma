@@ -93,6 +93,8 @@ model Project {
   location    String
   description String
   coverImage  String
+  gallery     String[]       @default([])
+  videoUrl    String?
   totalUnits  Int
   deliveredAt DateTime?
   createdAt   DateTime       @default(now())

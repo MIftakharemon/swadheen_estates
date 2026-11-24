@@ -18,6 +18,7 @@ export type PropertyWebFields = {
   has3d?: boolean
   has360?: boolean
   hasVideo?: boolean
+  videoUrl?: string
   completion?: string
   project?: string
   projectSlug?: string
@@ -51,6 +52,7 @@ export function buildWebFields(property: Property): PropertyWebFields {
   const project = clean(property.project)
   const projectSlug = clean(property.projectSlug)
   const floorLabel = clean(property.floor)
+  const videoUrl = clean(property.videoUrl ?? undefined)
   return {
     ...(titleBn ? { titleBn } : {}),
     ...(locationBn ? { locationBn } : {}),
@@ -65,6 +67,7 @@ export function buildWebFields(property: Property): PropertyWebFields {
     ...(property.has3d ? { has3d: true } : {}),
     ...(property.has360 ? { has360: true } : {}),
     ...(property.hasVideo ? { hasVideo: true } : {}),
+    ...(videoUrl ? { videoUrl } : {}),
     ...(completion ? { completion } : {}),
     ...(project ? { project } : {}),
     ...(projectSlug ? { projectSlug } : {}),

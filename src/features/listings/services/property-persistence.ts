@@ -102,6 +102,7 @@ export function propertyFormToWeb(input: PropertyFormInput): Property {
     has3d: input.has3d,
     has360: input.has360,
     hasVideo: input.hasVideo,
+    ...(input.videoUrl ? { videoUrl: input.videoUrl } : {}),
     ...(input.projectSlug ? { projectSlug: input.projectSlug } : {}),
     ...(input.completion ? { completion: input.completion } : {}),
   }

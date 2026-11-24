@@ -7,6 +7,8 @@ export type Project = {
   location: string
   description: string
   coverImage: string
+  gallery?: string[]
+  videoUrl?: string | null
   totalUnits: number
   deliveredAt?: string | null
   propertyCount?: number
